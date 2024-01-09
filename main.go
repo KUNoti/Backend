@@ -78,6 +78,8 @@ func main() {
 	}
 	log.Println(test)
 
+	r.POST("/login", userdomain.LoginUser)
+
 	port := viper.GetString("SERVER_PORT")
 	if port == "" {
 		port = "8000"
