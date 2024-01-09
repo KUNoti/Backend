@@ -1,4 +1,4 @@
-package api
+package user
 
 import (
 	"net/http"
@@ -7,7 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type userResponse struct {
+// type Server struct {
+// 	router *gin.Engine
+// }
+
+type Test struct {
+	ID int
+}
+
+type UserResponse struct {
 	Username          string    `json:"username"`
 	FullName          string    `json:"full_name"`
 	Email             string    `json:"email"`
@@ -15,21 +23,28 @@ type userResponse struct {
 	CreatedAt         time.Time `json:"created_at"`
 }
 
-type loginUserRequest struct {
+type LoginUserRequest struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
-type loginUserResponse struct {
+type LoginUserResponse struct {
 	AccessToken string       `json:"access_token"`
-	User        userResponse `json:"user"`
+	User        UserResponse `json:"user"`
 }
 
-func (server *Server) loginUser(ctx *gin.Context) {
-	var req loginUserRequest
+func errorResponse(err error) gin.H {
+	return gin.H{"error": err.Error()}
+}
+
+func LoginUser(ctx *gin.Context) {
+	var req LoginUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 	// todo
+
+	// mock
+	ctx.JSON(http.StatusOK, gin.H{"test": "test"})
 }
