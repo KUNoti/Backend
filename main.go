@@ -72,6 +72,7 @@ func main() {
 	)
 
 	r.POST("/login", userdomain.LoginUser)
+	r.GET("/getSchedule", userdomain.GetSchedule)
 
 	port := viper.GetString("SERVER_PORT")
 	if port == "" {
