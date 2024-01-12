@@ -71,12 +71,7 @@ func main() {
 		timeoutMiddleware(),
 	)
 
-	r.GET("/", testResponse)
-	//r.POST("/users/login", userdomain.LoginUser(context.Background()))
-	test := userdomain.Test{
-		ID: 3,
-	}
-	log.Println(test)
+	r.POST("/login", userdomain.LoginUser)
 
 	port := viper.GetString("SERVER_PORT")
 	if port == "" {
