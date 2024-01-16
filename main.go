@@ -1,7 +1,6 @@
 package main
 
 import (
-	userdomain "KUNoti/internal/user/domain/user"
 	"context"
 	"errors"
 	"log"
@@ -71,12 +70,15 @@ func main() {
 		timeoutMiddleware(),
 	)
 
-	r.GET("/", testResponse)
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Hello World!",
+		})
+	})
+
+	//r.POST("/create_test", command.CreateTestHandler)
+
 	//r.POST("/users/login", userdomain.LoginUser(context.Background()))
-	test := userdomain.Test{
-		ID: 3,
-	}
-	log.Println(test)
 
 	port := viper.GetString("SERVER_PORT")
 	if port == "" {
