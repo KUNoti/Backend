@@ -1,36 +1,21 @@
 package main
 
 import (
-	userdomain "KUNoti/internal/user/domain/user"
+	"KUNoti/internal/router"
+	"KUNoti/pkg/middleware"
 	"context"
 	"errors"
-	"log"
-	"net/http"
-	"time"
-
-	"github.com/gin-contrib/timeout"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/spf13/viper"
+	"log"
+	"net/http"
 )
 
 var appEnv string
 
-func testResponse(c *gin.Context) {
-	c.String(http.StatusRequestTimeout, "timeout")
-}
-
-func timeoutMiddleware() gin.HandlerFunc {
-	return timeout.New(
-		timeout.WithTimeout(1*time.Minute),
-		timeout.WithHandler(func(c *gin.Context) {
-			c.Next()
-		}),
-		timeout.WithResponse(testResponse),
-	)
-}
-
 func main() {
+
 	viper.SetConfigFile(".env")
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -68,11 +53,17 @@ func main() {
 	r.Use(
 		gin.Logger(),
 		gin.Recovery(),
-		timeoutMiddleware(),
+		middleware.TimeoutMiddleware(),
 	)
 
-	r.POST("/login", userdomain.LoginUser)
-	r.GET("/getSchedule", userdomain.GetSchedule)
+	// r.GET("/", func(c *gin.Context) {
+	// 	c.JSON(http.StatusOK, gin.H{
+	// 		"message": "Hello World!",
+	// 	})
+	// })
+	routerGroup := r.Group("")
+	router := router.NewAppRouter(db)
+	router.InitEndpoints(routerGroup)
 
 	port := viper.GetString("SERVER_PORT")
 	if port == "" {

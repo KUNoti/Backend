@@ -2,7 +2,9 @@ version: "2"
 sql:
   - engine: "postgresql"
     queries:
-      - "internal/user/sql"
+      # - "internal/user/sql"
+      - "internal/controller/event/sql"
+
    
     schema: "schema.sql"
     gen:
