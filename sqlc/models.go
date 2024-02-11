@@ -8,9 +8,20 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type Test struct {
-	ID        int32            `json:"id"`
-	Title     pgtype.Text      `json:"title"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+type Event struct {
+	ID           int32            `json:"id"`
+	StartDate    pgtype.Timestamp `json:"start_date"`
+	EndDate      pgtype.Timestamp `json:"end_date"`
+	CreatedAt    pgtype.Timestamp `json:"created_at"`
+	UpdatedAt    pgtype.Timestamp `json:"updated_at"`
+	Title        string           `json:"title"`
+	Latitude     float64          `json:"latitude"`
+	Longitude    float64          `json:"longitude"`
+	Price        float64          `json:"price"`
+	Rating       float64          `json:"rating"`
+	Image        string           `json:"image"`
+	Creator      string           `json:"creator"`
+	Detail       string           `json:"detail"`
+	LocationName string           `json:"location_name"`
+	NeedRegis    bool             `json:"need_regis"`
 }
