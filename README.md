@@ -73,9 +73,9 @@ url = ""
 }
 ```
 # My Event
-Creator
+### Creator      
 Todo show list ของคนที่สมัทรเข้าevent ข้อม ให้ กด approve ไรงี้
 
-คนเข้าร่วม หรือ following
+### คนเข้าร่วม หรือ following      
 Todo
 
