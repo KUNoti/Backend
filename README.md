@@ -65,6 +65,7 @@ url = ""
 ```
 
 # สมัทรเข้า event 
+### Request
 ```json
 {
   "userId" : "userId",
