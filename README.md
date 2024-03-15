@@ -1,11 +1,13 @@
 Deploy เลยก็ได้นะ
 
 # Events
+url = ""
 ### Request
 Just Get
 ### Response
 
-# (Post) Event 
+# (Create) Event 
+url = ""
 ### Request
 ```json
 {
@@ -24,6 +26,7 @@ Just Get
 ```
 
 # Search 
+url = ""
 ### Request
 ```json
 {
@@ -41,6 +44,7 @@ Just Get
 [Event]
 
 # Auth (login)
+url = ""
 ### Request
 ```json
 {
@@ -51,6 +55,7 @@ Just Get
 ### Response
 
 # Create User (Post)
+url = ""
 ### Request
 ```json
   "username" : "username",
