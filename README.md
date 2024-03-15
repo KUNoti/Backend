@@ -1,14 +1,5 @@
 Deploy เลยก็ได้นะ
 
-# Create User (Post)
-### Request
-```json
-  "username" : "username",
-  "password" : "password",
-  "email" : "email"
-  "image" : "TODO!!!!!!!!!!!!!!!!!!!!!!!!!!"
-```
-
 # Events
 ### Request
 Just Get
@@ -58,6 +49,15 @@ Just Get
 }
 ```
 ### Response
+
+# Create User (Post)
+### Request
+```json
+  "username" : "username",
+  "password" : "password",
+  "email" : "email"
+  "image" : "TODO!!!!!!!!!!!!!!!!!!!!!!!!!! can be null"
+```
 
 # สมัทรเข้า event 
 Todo
