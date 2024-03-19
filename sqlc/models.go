@@ -25,3 +25,21 @@ type Event struct {
 	LocationName string           `json:"location_name"`
 	NeedRegis    bool             `json:"need_regis"`
 }
+
+type Tag struct {
+	ID         int32            `json:"id"`
+	Color      string           `json:"color"`
+	Name       string           `json:"name"`
+	Category   string           `json:"category"`
+	IsOfficial bool             `json:"is_official"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
+}
+
+type User struct {
+	ID        int32            `json:"id"`
+	Name      string           `json:"name"`
+	Role      string           `json:"role"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+}

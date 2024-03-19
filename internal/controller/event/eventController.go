@@ -21,7 +21,6 @@ func (e EventController) CreateEvent(ctx *gin.Context) {
 	// service.CreateEvent -> service.repo.CreateEvent
 	var createEventRequest eventrequest.CreateEventRequest
 	err := ctx.BindJSON(&createEventRequest)
-	log.Println("test: ", err)
 	if err != nil {
 		log.Println(err.Error())
 		log.Printf("Error: %v\n", err)
@@ -76,6 +75,25 @@ func (e EventController) DeleteEvent(ctx *gin.Context) {
 	ctx.JSON(200, "delete event ID : "+id)
 }
 
+func (e EventController) FinderEvent(ctx *gin.Context) {
+	var finderEventRequest eventrequest.FinderEventRequest
+	err := ctx.BindJSON(&finderEventRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	events, err := e.es.Finder(ctx, finderEventRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	ctx.JSON(200, events)
+}
+
 func (e EventController) HiEvent(ctx *gin.Context) {
 	ctx.JSON(200, "hi event")
 }
@@ -86,6 +104,7 @@ func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup.POST("/create", e.CreateEvent)
 	eventGroup.PUT("/update", e.UpdateEvent)
 	eventGroup.DELETE("/delete", e.DeleteEvent)
+	eventGroup.GET("/find", e.FinderEvent)
 }
 
 func NewEventController(db *pgxpool.Pool) *EventController {

@@ -49,6 +49,20 @@ func (er EventRepository) Delete(ctx *gin.Context, deleteEventRequest eventreque
 	return id.String(), nil
 }
 
+func (er EventRepository) Finder(ctx *gin.Context, finderEventRequest eventrequest.FinderEventRequest) ([]event.Event, error) {
+	arg := eventrequest.CreateParamsFromFinderRequest(finderEventRequest)
+
+	eventSqlcs, err := er.queries.FinderEvent(ctx, arg)
+	if err != nil {
+		return nil, err
+	}
+	eventConvert := make([]event.Event, len(eventSqlcs))
+	for i, e := range eventSqlcs {
+		eventConvert[i] = event.NewFromSqlc(e)
+	}
+	return eventConvert, nil
+}
+
 func NewEventReposiry(db *pgxpool.Pool, queries *sqlc.Queries) *EventRepository {
 	return &EventRepository{
 		DB:      db,

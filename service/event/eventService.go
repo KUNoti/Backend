@@ -38,6 +38,14 @@ func (eventService EventService) Delete(ctx *gin.Context, deleteEventRequest eve
 	return id, nil
 }
 
+func (eventService EventService) Finder(ctx *gin.Context, finderEventRequest eventrequest.FinderEventRequest) ([]event.Event, error) {
+	events, err := eventService.eventRepository.Finder(ctx, finderEventRequest)
+	if err != nil {
+		return nil, err
+	}
+	return events, nil
+}
+
 func NewEventService(db *pgxpool.Pool) *EventService {
 	queries := sqlc.New(db)
 	return &EventService{
