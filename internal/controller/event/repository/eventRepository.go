@@ -13,10 +13,6 @@ type EventRepository struct {
 	queries *sqlc.Queries
 }
 
-//func (er EventRepository) SaveDB(ctx *gin.Context) error {
-//	return nil
-//}
-
 func (er EventRepository) Create(ctx *gin.Context, createEventRequest eventrequest.CreateEventRequest) (event.Event, error) {
 	arg := eventrequest.CreateParamsFromCreateRequest(createEventRequest)
 
@@ -50,9 +46,19 @@ func (er EventRepository) Delete(ctx *gin.Context, deleteEventRequest eventreque
 }
 
 func (er EventRepository) Finder(ctx *gin.Context, finderEventRequest eventrequest.FinderEventRequest) ([]event.Event, error) {
-	arg := eventrequest.CreateParamsFromFinderRequest(finderEventRequest)
+	eventSqlcs, err := er.queries.FinderEvent(ctx, finderEventRequest.Keyword)
+	if err != nil {
+		return nil, err
+	}
+	eventConvert := make([]event.Event, len(eventSqlcs))
+	for i, e := range eventSqlcs {
+		eventConvert[i] = event.NewFromSqlc(e)
+	}
+	return eventConvert, nil
+}
 
-	eventSqlcs, err := er.queries.FinderEvent(ctx, arg)
+func (er EventRepository) FindAll(ctx *gin.Context) ([]event.Event, error) {
+	eventSqlcs, err := er.queries.FindAllEvent(ctx)
 	if err != nil {
 		return nil, err
 	}

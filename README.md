@@ -1,11 +1,34 @@
 Deploy เลยก็ได้นะ
 
 # Events
-url = ""
+url = "/event/events"
 ### Request
 Just Get
 ### Response
-
+```json
+  {
+    [
+      {
+        "Id": 1,
+        "Title": "Music Concert",
+        "Lat": 13.8517,
+        "Lon": 100.5678,
+        "StartDate": "2024-02-10T18:00:00Z",
+        "EndDate": "2024-02-12T22:00:00Z",
+        "created_at": "2024-03-19T06:23:20.652Z",
+        "updated_at": "2024-03-19T06:23:20.652Z",
+        "price": 10.99,
+        "rating": 4.5,
+        "image": "https://news.airbnb.com/wp-content/uploads/sites/4/2019/06/PJM020719Q202_Luxe_WanakaNZ_LivingRoom_0264-LightOn_R1.jpg?fit=2500%2C1666",
+        "creator": "InnovateTech",
+        "detail": "Explore the latest in technology",
+        "location_name": "Concert Hall",
+        "need_regis": true
+      },
+      ...
+    ]
+  }
+```
 # (Create) Event 
 url = ""
 ### Request

@@ -5,7 +5,6 @@ import (
 	"KUNoti/internal/controller/event/repository"
 	"KUNoti/internal/request/eventrequest"
 	"KUNoti/sqlc"
-
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -46,11 +45,17 @@ func (eventService EventService) Finder(ctx *gin.Context, finderEventRequest eve
 	return events, nil
 }
 
+func (eventService EventService) FindAll(ctx *gin.Context) ([]event.Event, error) {
+	events, err := eventService.eventRepository.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return events, nil
+}
+
 func NewEventService(db *pgxpool.Pool) *EventService {
 	queries := sqlc.New(db)
 	return &EventService{
 		eventRepository: repository.NewEventReposiry(db, queries),
 	}
 }
-
-// Controller -> Service -> Repository (db)

@@ -16,9 +16,6 @@ type EventController struct {
 }
 
 func (e EventController) CreateEvent(ctx *gin.Context) {
-	// Get body from req
-
-	// service.CreateEvent -> service.repo.CreateEvent
 	var createEventRequest eventrequest.CreateEventRequest
 	err := ctx.BindJSON(&createEventRequest)
 	if err != nil {
@@ -77,11 +74,8 @@ func (e EventController) DeleteEvent(ctx *gin.Context) {
 
 func (e EventController) FinderEvent(ctx *gin.Context) {
 	var finderEventRequest eventrequest.FinderEventRequest
-	err := ctx.BindJSON(&finderEventRequest)
-	if err != nil {
-		log.Println(err)
-		ctx.JSON(http.StatusBadRequest, err)
-		return
+	if queryParam, ok := ctx.GetQuery("keyword"); ok {
+		finderEventRequest.Keyword = queryParam
 	}
 
 	events, err := e.es.Finder(ctx, finderEventRequest)
@@ -90,7 +84,16 @@ func (e EventController) FinderEvent(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
+	ctx.JSON(200, events)
+}
 
+func (e EventController) Events(ctx *gin.Context) {
+	events, err := e.es.FindAll(ctx)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
 	ctx.JSON(200, events)
 }
 
@@ -104,7 +107,8 @@ func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup.POST("/create", e.CreateEvent)
 	eventGroup.PUT("/update", e.UpdateEvent)
 	eventGroup.DELETE("/delete", e.DeleteEvent)
-	eventGroup.GET("/find", e.FinderEvent)
+	eventGroup.GET("", e.FinderEvent)
+	eventGroup.GET("/events", e.Events)
 }
 
 func NewEventController(db *pgxpool.Pool) *EventController {
