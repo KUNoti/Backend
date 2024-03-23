@@ -2,8 +2,9 @@ package eventrequest
 
 import (
 	"KUNoti/sqlc"
-	"github.com/jackc/pgx/v5/pgtype"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type CreateEventRequest struct {
@@ -20,6 +21,7 @@ type CreateEventRequest struct {
 	LocationName string    `json:"location_name"`
 	NeedRegis    bool      `json:"need_regis"`
 	//Tag [list tag]
+	//User id
 }
 
 func CreateParamsFromCreateRequest(cmd CreateEventRequest) sqlc.CreateEventParams {

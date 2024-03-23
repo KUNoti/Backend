@@ -5,11 +5,12 @@ import (
 	"KUNoti/pkg/middleware"
 	"context"
 	"errors"
+	"log"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/spf13/viper"
-	"log"
-	"net/http"
 )
 
 var appEnv string
@@ -56,11 +57,6 @@ func main() {
 		middleware.TimeoutMiddleware(),
 	)
 
-	// r.GET("/", func(c *gin.Context) {
-	// 	c.JSON(http.StatusOK, gin.H{
-	// 		"message": "Hello World!",
-	// 	})
-	// })
 	routerGroup := r.Group("")
 	router := router.NewAppRouter(db)
 	router.InitEndpoints(routerGroup)
