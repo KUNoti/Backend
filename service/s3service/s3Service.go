@@ -16,6 +16,7 @@ import (
 
 type S3Service struct {
 	uploader *s3manager.Uploader
+	bucket   string
 }
 
 const (
@@ -45,6 +46,7 @@ func NewS3Service(config *S3ServiceConfig) (*S3Service, error) {
 
 	return &S3Service{
 		uploader: s3manager.NewUploader(sess),
+		bucket:   config.Bucket,
 	}, nil
 }
 
@@ -70,7 +72,7 @@ func (s *S3Service) Upload(folder string, file *multipart.FileHeader) (string, e
 	}
 
 	result, err := s.uploader.UploadWithContext(context.TODO(), &s3manager.UploadInput{
-		Bucket: aws.String("keventyimage"),
+		Bucket: aws.String(s.bucket),
 		Key:    aws.String(fmt.Sprintf("%s/%s-%s", folder, id.String(), fileExtension)),
 		Body:   f,
 		ACL:    aws.String("public-read"),
