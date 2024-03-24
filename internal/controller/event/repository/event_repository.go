@@ -69,7 +69,7 @@ func (er EventRepository) FindAll(ctx *gin.Context) ([]event.Event, error) {
 	return eventConvert, nil
 }
 
-func NewEventReposiry(db *pgxpool.Pool, queries *sqlc.Queries) *EventRepository {
+func NewEventRepository(db *pgxpool.Pool, queries *sqlc.Queries) *EventRepository {
 	return &EventRepository{
 		DB:      db,
 		queries: queries,

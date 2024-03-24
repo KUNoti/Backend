@@ -13,13 +13,11 @@ type CreateEventRequest struct {
 	StartDate    time.Time `json:"start_date_time"`
 	EndDate      time.Time `json:"end_date_time"`
 	Price        float64   `json:"price"`
-	Rating       float64   `json:"rating"`
 	Image        string    `json:"image"`
 	Creator      string    `json:"creator"`
 	Detail       string    `json:"detail"`
 	LocationName string    `json:"location_name"`
 	NeedRegis    bool      `json:"need_regis"`
-	//Tag [list tag]
 }
 
 func CreateParamsFromCreateRequest(cmd CreateEventRequest) sqlc.CreateEventParams {
@@ -35,9 +33,11 @@ func CreateParamsFromCreateRequest(cmd CreateEventRequest) sqlc.CreateEventParam
 			Time:  cmd.EndDate,
 			Valid: true,
 		},
-		Price:        cmd.Price,
-		Rating:       cmd.Rating,
-		Image:        cmd.Image,
+		Price: cmd.Price,
+		Image: pgtype.Text{
+			String: cmd.Image,
+			Valid:  cmd.Image != "",
+		},
 		Creator:      cmd.Creator,
 		Detail:       cmd.Detail,
 		LocationName: cmd.LocationName,

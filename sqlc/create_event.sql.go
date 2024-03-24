@@ -14,12 +14,12 @@ import (
 const createEvent = `-- name: CreateEvent :one
 INSERT INTO "events"
 (
- title, latitude, longitude, start_date, end_date, price, rating,
+ title, latitude, longitude, start_date, end_date, price,
  image, creator, detail, location_name, need_regis,
  created_at, updated_at
  )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-RETURNING id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, rating, image, creator, detail, location_name, need_regis
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+RETURNING id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, creator, detail, location_name, need_regis, tag
 `
 
 type CreateEventParams struct {
@@ -29,8 +29,7 @@ type CreateEventParams struct {
 	StartDate    pgtype.Timestamp `json:"start_date"`
 	EndDate      pgtype.Timestamp `json:"end_date"`
 	Price        float64          `json:"price"`
-	Rating       float64          `json:"rating"`
-	Image        string           `json:"image"`
+	Image        pgtype.Text      `json:"image"`
 	Creator      string           `json:"creator"`
 	Detail       string           `json:"detail"`
 	LocationName string           `json:"location_name"`
@@ -45,7 +44,6 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event
 		arg.StartDate,
 		arg.EndDate,
 		arg.Price,
-		arg.Rating,
 		arg.Image,
 		arg.Creator,
 		arg.Detail,
@@ -63,12 +61,12 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event
 		&i.Latitude,
 		&i.Longitude,
 		&i.Price,
-		&i.Rating,
 		&i.Image,
 		&i.Creator,
 		&i.Detail,
 		&i.LocationName,
 		&i.NeedRegis,
+		&i.Tag,
 	)
 	return i, err
 }

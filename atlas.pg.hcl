@@ -28,12 +28,12 @@ table "events" {
     null = false
     type = float
   }
-  column "rating" {
-    null = false
-    type = float
+  column "tag" {
+    null = true
+    type = character_varying(255)
   }
   column "image" {
-    null = false
+    null = true
     type = character_varying(255)
   }
   column "creator" {
@@ -67,44 +67,6 @@ table "events" {
   }
 }
 
-table "tags" {
-  schema = schema.public
-  column "id" {
-    null = false
-    type = serial
-  }
-  column "color" {
-    null = false
-    type = character_varying(20)
-  }
-  column "name" {
-    null = false
-    type = character_varying(255)
-  }
-  column "category" {
-    null = false
-    type = character_varying(255)
-  }
-  column "is_official" {
-    null = false
-    type = boolean
-    default = false
-  }
-  column "created_at" {
-    null    = false
-    type    = timestamp(3)
-    default = sql("CURRENT_TIMESTAMP")
-  }
-  column "updated_at" {
-    null    = false
-    type    = timestamp(3)
-    default = sql("CURRENT_TIMESTAMP")
-  }
-  primary_key {
-    columns = [column.id]
-  }
-}
-
 table "users" {
   schema = schema.public
   column "id" {
@@ -113,11 +75,31 @@ table "users" {
   }
   column "name" {
     null = false
-    type = character_varying(255)
+    type = varchar(255)
   }
   column "role" {
     null = false
     type = character_varying(255)
+  }
+  column "social_id" {
+    null = true
+    type = varchar(255)
+  }
+  column "email" {
+    null = false
+    type = varchar(255)
+  }
+  column "profile_image" {
+    null = true
+    type = varchar(255)
+  }
+  column "username" {
+    null = false
+    type = varchar(255)
+  }
+  column "password" {
+    null = false
+    type = varchar(255)
   }
   column "created_at" {
     null    = false

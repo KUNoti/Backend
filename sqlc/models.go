@@ -18,28 +18,23 @@ type Event struct {
 	Latitude     float64          `json:"latitude"`
 	Longitude    float64          `json:"longitude"`
 	Price        float64          `json:"price"`
-	Rating       float64          `json:"rating"`
-	Image        string           `json:"image"`
+	Image        pgtype.Text      `json:"image"`
 	Creator      string           `json:"creator"`
 	Detail       string           `json:"detail"`
 	LocationName string           `json:"location_name"`
 	NeedRegis    bool             `json:"need_regis"`
-}
-
-type Tag struct {
-	ID         int32            `json:"id"`
-	Color      string           `json:"color"`
-	Name       string           `json:"name"`
-	Category   string           `json:"category"`
-	IsOfficial bool             `json:"is_official"`
-	CreatedAt  pgtype.Timestamp `json:"created_at"`
-	UpdatedAt  pgtype.Timestamp `json:"updated_at"`
+	Tag          pgtype.Text      `json:"tag"`
 }
 
 type User struct {
-	ID        int32            `json:"id"`
-	Name      string           `json:"name"`
-	Role      string           `json:"role"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	ID           int32            `json:"id"`
+	Name         string           `json:"name"`
+	Role         string           `json:"role"`
+	CreatedAt    pgtype.Timestamp `json:"created_at"`
+	UpdatedAt    pgtype.Timestamp `json:"updated_at"`
+	Email        string           `json:"email"`
+	ProfileImage pgtype.Text      `json:"profile_image"`
+	Username     string           `json:"username"`
+	Password     string           `json:"password"`
+	SocialID     pgtype.Text      `json:"social_id"`
 }
