@@ -11,7 +11,6 @@ type CreateUserRequest struct {
 	Password     string `json:"password"`
 	Name         string `json:"name"`
 	SocialID     string `json:"social_id"`
-	Role         string `json:"role"`
 	Email        string `json:"email"`
 	ProfileImage string `json:"profile_image"`
 }
@@ -21,7 +20,6 @@ func CreateParamsFromCreateUserRequest(cmd CreateUserRequest) sqlc.CreateUserPar
 		Name:     cmd.Name,
 		Username: cmd.Username,
 		Password: cmd.Password,
-		Role:     "User",
 		Email:    cmd.Email,
 		SocialID: pgtype.Text{
 			String: cmd.SocialID,
@@ -40,7 +38,6 @@ type User struct {
 	Password     string
 	Name         string
 	SocialID     string
-	Role         string
 	Email        string
 	ProfileImage string
 	CreatedAt    time.Time
