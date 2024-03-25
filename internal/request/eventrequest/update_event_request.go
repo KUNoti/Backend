@@ -13,13 +13,11 @@ type UpdateEventRequest struct {
 	StartDate    time.Time `json:"start_date"`
 	EndDate      time.Time `json:"end_date"`
 	Price        float64   `json:"price"`
-	Rating       float64   `json:"rating"`
-	Creator      string    `json:"creator"`
+	Creator      int       `json:"creator"`
 	Detail       string    `json:"detail"`
 	LocationName string    `json:"location_name"`
 	NeedRegis    *bool     `json:"need_regis"`
 	ID           int32     `json:"id"`
-	//Tag [list tag]
 }
 
 func CreateParamsFromUpdateRequest(cmd UpdateEventRequest) sqlc.UpdateEventByIDParams {
@@ -49,13 +47,9 @@ func CreateParamsFromUpdateRequest(cmd UpdateEventRequest) sqlc.UpdateEventByIDP
 			Float64: cmd.Price,
 			Valid:   cmd.Price != 0.0,
 		},
-		Rating: pgtype.Float8{
-			Float64: cmd.Rating,
-			Valid:   cmd.Rating != 0.0,
-		},
-		Creator: pgtype.Text{
-			String: cmd.Creator,
-			Valid:  cmd.Creator != "",
+		Creator: pgtype.Int4{
+			Int32: int32(cmd.Creator),
+			Valid: cmd.Creator != 0,
 		},
 		Detail: pgtype.Text{
 			String: cmd.Detail,
