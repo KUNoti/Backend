@@ -56,6 +56,6 @@ func (eventService EventService) FindAll(ctx *gin.Context) ([]event.Event, error
 func NewEventService(db *pgxpool.Pool) *EventService {
 	queries := sqlc.New(db)
 	return &EventService{
-		eventRepository: repository.NewEventReposiry(db, queries),
+		eventRepository: repository.NewEventRepository(db, queries),
 	}
 }

@@ -26,7 +26,6 @@ func (e EventController) CreateEvent(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-	log.Println(createEventRequest)
 
 	// Handle image upload
 	file, err := ctx.FormFile("userFile")
@@ -116,13 +115,8 @@ func (e EventController) Events(ctx *gin.Context) {
 	ctx.JSON(200, events)
 }
 
-func (e EventController) HiEvent(ctx *gin.Context) {
-	ctx.JSON(200, "hi event")
-}
-
 func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup := r.Group("/event")
-	eventGroup.GET("/hi", e.HiEvent)
 	eventGroup.POST("/create", e.CreateEvent)
 	eventGroup.PUT("/update", e.UpdateEvent)
 	eventGroup.DELETE("/delete", e.DeleteEvent)

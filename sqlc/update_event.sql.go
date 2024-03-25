@@ -19,16 +19,15 @@ longitude = COALESCE($3, longitude),
 start_date = COALESCE($4, start_date),
 end_date = COALESCE($5, end_date),
 price = COALESCE($6, price),
-rating = COALESCE($7, rating),
-creator = COALESCE($8, creator),
-detail = COALESCE($9, detail),
-location_name = COALESCE($10, location_name),
-need_regis = COALESCE($11, need_regis),
+creator = COALESCE($7, creator),
+detail = COALESCE($8, detail),
+location_name = COALESCE($9, location_name),
+need_regis = COALESCE($10, need_regis),
 updated_at = CURRENT_TIMESTAMP
 
 
-WHERE id = $12
-RETURNING id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, rating, image, creator, detail, location_name, need_regis
+WHERE id = $11
+RETURNING id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator
 `
 
 type UpdateEventByIDParams struct {
@@ -38,8 +37,7 @@ type UpdateEventByIDParams struct {
 	StartDate    pgtype.Timestamp `json:"start_date"`
 	EndDate      pgtype.Timestamp `json:"end_date"`
 	Price        pgtype.Float8    `json:"price"`
-	Rating       pgtype.Float8    `json:"rating"`
-	Creator      pgtype.Text      `json:"creator"`
+	Creator      pgtype.Int4      `json:"creator"`
 	Detail       pgtype.Text      `json:"detail"`
 	LocationName pgtype.Text      `json:"location_name"`
 	NeedRegis    pgtype.Bool      `json:"need_regis"`
@@ -55,7 +53,6 @@ func (q *Queries) UpdateEventByID(ctx context.Context, arg UpdateEventByIDParams
 		arg.StartDate,
 		arg.EndDate,
 		arg.Price,
-		arg.Rating,
 		arg.Creator,
 		arg.Detail,
 		arg.LocationName,
@@ -73,12 +70,12 @@ func (q *Queries) UpdateEventByID(ctx context.Context, arg UpdateEventByIDParams
 		&i.Latitude,
 		&i.Longitude,
 		&i.Price,
-		&i.Rating,
 		&i.Image,
-		&i.Creator,
 		&i.Detail,
 		&i.LocationName,
 		&i.NeedRegis,
+		&i.Tag,
+		&i.Creator,
 	)
 	return i, err
 }
