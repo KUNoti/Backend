@@ -19,7 +19,7 @@ UPDATE users SET
                  profile_image = COALESCE($4, profile_image),
                  updated_at = CURRENT_TIMESTAMP
 WHERE id = $5
-RETURNING id, name, role, created_at, updated_at, email, profile_image, username, password, social_id
+RETURNING id, name, created_at, updated_at, email, profile_image, username, password, social_id
 `
 
 type UpdateUserByIDParams struct {
@@ -42,7 +42,6 @@ func (q *Queries) UpdateUserByID(ctx context.Context, arg UpdateUserByIDParams) 
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,

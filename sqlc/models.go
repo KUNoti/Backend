@@ -29,7 +29,6 @@ type Event struct {
 type User struct {
 	ID           int32            `json:"id"`
 	Name         string           `json:"name"`
-	Role         string           `json:"role"`
 	CreatedAt    pgtype.Timestamp `json:"created_at"`
 	UpdatedAt    pgtype.Timestamp `json:"updated_at"`
 	Email        string           `json:"email"`

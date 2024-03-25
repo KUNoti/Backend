@@ -12,7 +12,7 @@ import (
 )
 
 const findUserBySocialId = `-- name: FindUserBySocialId :one
-SELECT id, name, role, created_at, updated_at, email, profile_image, username, password, social_id FROM users
+SELECT id, name, created_at, updated_at, email, profile_image, username, password, social_id FROM users
 WHERE social_id = $1 LIMIT 1
 `
 
@@ -22,7 +22,6 @@ func (q *Queries) FindUserBySocialId(ctx context.Context, socialID pgtype.Text) 
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,

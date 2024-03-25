@@ -10,7 +10,7 @@ import (
 )
 
 const findUserByEmail = `-- name: FindUserByEmail :one
-SELECT id, name, role, created_at, updated_at, email, profile_image, username, password, social_id FROM users
+SELECT id, name, created_at, updated_at, email, profile_image, username, password, social_id FROM users
 WHERE email = $1 LIMIT 1
 `
 
@@ -20,7 +20,6 @@ func (q *Queries) FindUserByEmail(ctx context.Context, email string) (User, erro
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,

@@ -10,7 +10,7 @@ import (
 )
 
 const findAllUser = `-- name: FindAllUser :many
-SELECT id, name, role, created_at, updated_at, email, profile_image, username, password, social_id FROM users
+SELECT id, name, created_at, updated_at, email, profile_image, username, password, social_id FROM users
 `
 
 func (q *Queries) FindAllUser(ctx context.Context) ([]User, error) {
@@ -25,7 +25,6 @@ func (q *Queries) FindAllUser(ctx context.Context) ([]User, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
-			&i.Role,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Email,

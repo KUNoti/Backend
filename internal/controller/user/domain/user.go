@@ -6,7 +6,6 @@ type User struct {
 	Name         string
 	Username     string
 	Password     string
-	Role         string
 	Email        string
 	SocialID     string
 	ProfileImage string
@@ -17,7 +16,6 @@ func NewFromSqlc(u sqlc.User) User {
 		Name:     u.Name,
 		Username: u.Username,
 		Password: u.Password,
-		Role:     u.Role,
 		Email:    u.Email,
 	}
 	if u.SocialID.Valid {
