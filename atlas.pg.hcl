@@ -38,7 +38,7 @@ table "events" {
   }
   column "creator" {
     null = false
-    type = character_varying(255)
+    type = int
   }
   column "detail" {
     null = false

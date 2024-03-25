@@ -27,7 +27,7 @@ updated_at = CURRENT_TIMESTAMP
 
 
 WHERE id = $11
-RETURNING id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, creator, detail, location_name, need_regis, tag
+RETURNING id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator
 `
 
 type UpdateEventByIDParams struct {
@@ -37,7 +37,7 @@ type UpdateEventByIDParams struct {
 	StartDate    pgtype.Timestamp `json:"start_date"`
 	EndDate      pgtype.Timestamp `json:"end_date"`
 	Price        pgtype.Float8    `json:"price"`
-	Creator      pgtype.Text      `json:"creator"`
+	Creator      pgtype.Int4      `json:"creator"`
 	Detail       pgtype.Text      `json:"detail"`
 	LocationName pgtype.Text      `json:"location_name"`
 	NeedRegis    pgtype.Bool      `json:"need_regis"`
@@ -71,11 +71,11 @@ func (q *Queries) UpdateEventByID(ctx context.Context, arg UpdateEventByIDParams
 		&i.Longitude,
 		&i.Price,
 		&i.Image,
-		&i.Creator,
 		&i.Detail,
 		&i.LocationName,
 		&i.NeedRegis,
 		&i.Tag,
+		&i.Creator,
 	)
 	return i, err
 }

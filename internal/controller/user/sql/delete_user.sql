@@ -1,2 +1,3 @@
--- name: DeleteUser :execresult
-DELETE FROM users WHERE id = $1;
+-- name: DeleteUser :one
+DELETE FROM users WHERE id = $1
+    RETURNING id;

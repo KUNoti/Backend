@@ -7,14 +7,15 @@ package sqlc
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
-const deleteUser = `-- name: DeleteUser :execresult
+const deleteUser = `-- name: DeleteUser :one
 DELETE FROM users WHERE id = $1
+    RETURNING id
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, id int32) (pgconn.CommandTag, error) {
-	return q.db.Exec(ctx, deleteUser, id)
+func (q *Queries) DeleteUser(ctx context.Context, id int32) (int32, error) {
+	row := q.db.QueryRow(ctx, deleteUser, id)
+	err := row.Scan(&id)
+	return id, err
 }

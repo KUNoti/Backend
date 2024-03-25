@@ -23,9 +23,9 @@ RETURNING id, name, role, created_at, updated_at, email, profile_image, username
 `
 
 type UpdateUserByIDParams struct {
-	Name         string      `json:"name"`
+	Name         pgtype.Text `json:"name"`
 	SocialID     pgtype.Text `json:"social_id"`
-	Email        string      `json:"email"`
+	Email        pgtype.Text `json:"email"`
 	ProfileImage pgtype.Text `json:"profile_image"`
 	ID           int32       `json:"id"`
 }

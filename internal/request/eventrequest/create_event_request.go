@@ -14,7 +14,7 @@ type CreateEventRequest struct {
 	EndDate      time.Time `json:"end_date_time"`
 	Price        float64   `json:"price"`
 	Image        string    `json:"image"`
-	Creator      string    `json:"creator"`
+	Creator      int       `json:"creator"`
 	Detail       string    `json:"detail"`
 	LocationName string    `json:"location_name"`
 	NeedRegis    bool      `json:"need_regis"`
@@ -38,7 +38,7 @@ func CreateParamsFromCreateRequest(cmd CreateEventRequest) sqlc.CreateEventParam
 			String: cmd.Image,
 			Valid:  cmd.Image != "",
 		},
-		Creator:      cmd.Creator,
+		Creator:      int32(cmd.Creator),
 		Detail:       cmd.Detail,
 		LocationName: cmd.LocationName,
 		NeedRegis:    cmd.NeedRegis,

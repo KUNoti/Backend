@@ -19,11 +19,11 @@ type Event struct {
 	Longitude    float64          `json:"longitude"`
 	Price        float64          `json:"price"`
 	Image        pgtype.Text      `json:"image"`
-	Creator      string           `json:"creator"`
 	Detail       string           `json:"detail"`
 	LocationName string           `json:"location_name"`
 	NeedRegis    bool             `json:"need_regis"`
 	Tag          pgtype.Text      `json:"tag"`
+	Creator      int32            `json:"creator"`
 }
 
 type User struct {

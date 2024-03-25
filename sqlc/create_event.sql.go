@@ -19,7 +19,7 @@ INSERT INTO "events"
  created_at, updated_at
  )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-RETURNING id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, creator, detail, location_name, need_regis, tag
+RETURNING id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator
 `
 
 type CreateEventParams struct {
@@ -30,7 +30,7 @@ type CreateEventParams struct {
 	EndDate      pgtype.Timestamp `json:"end_date"`
 	Price        float64          `json:"price"`
 	Image        pgtype.Text      `json:"image"`
-	Creator      string           `json:"creator"`
+	Creator      int32            `json:"creator"`
 	Detail       string           `json:"detail"`
 	LocationName string           `json:"location_name"`
 	NeedRegis    bool             `json:"need_regis"`
@@ -62,11 +62,11 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event
 		&i.Longitude,
 		&i.Price,
 		&i.Image,
-		&i.Creator,
 		&i.Detail,
 		&i.LocationName,
 		&i.NeedRegis,
 		&i.Tag,
+		&i.Creator,
 	)
 	return i, err
 }

@@ -10,7 +10,7 @@ import (
 )
 
 const findAllEvent = `-- name: FindAllEvent :many
-SELECT id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, creator, detail, location_name, need_regis, tag
+SELECT id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator
 FROM events
 ORDER BY id DESC
 `
@@ -35,11 +35,11 @@ func (q *Queries) FindAllEvent(ctx context.Context) ([]Event, error) {
 			&i.Longitude,
 			&i.Price,
 			&i.Image,
-			&i.Creator,
 			&i.Detail,
 			&i.LocationName,
 			&i.NeedRegis,
 			&i.Tag,
+			&i.Creator,
 		); err != nil {
 			return nil, err
 		}

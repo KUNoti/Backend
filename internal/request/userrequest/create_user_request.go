@@ -34,23 +34,6 @@ func CreateParamsFromCreateUserRequest(cmd CreateUserRequest) sqlc.CreateUserPar
 	}
 }
 
-//type FindUserRequest struct {
-//	Username     string `json:"username"`
-//	Password     string `json:"password"`
-//	Name         string `json:"name"`
-//	SocialID     string `json:"social_id"`
-//	Role         string `json:"role"`
-//	Email        string `json:"email"`
-//	ProfileImage string `json:"profile_image"`
-//}
-
-//type GoogleAuthInput struct {
-//	GoogleEmail string
-//	GoogleName  string
-//	GoogleID    string
-//	Picture     string
-//}
-
 type User struct {
 	ID           int
 	Username     string

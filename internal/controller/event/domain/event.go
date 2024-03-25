@@ -17,7 +17,7 @@ type Event struct {
 	Price        float64   `json:"price"`
 	Rating       float64   `json:"rating"`
 	Image        string    `json:"image"`
-	Creator      string    `json:"creator"`
+	Creator      int       `json:"creator"`
 	Detail       string    `json:"detail"`
 	LocationName string    `json:"location_name"`
 	NeedRegis    bool      `json:"need_regis"`
@@ -34,7 +34,7 @@ func NewFromSqlc(e sqlc.Event) Event {
 		CreatedAt:    e.CreatedAt.Time,
 		UpdatedAt:    e.UpdatedAt.Time,
 		Price:        e.Price,
-		Creator:      e.Creator,
+		Creator:      int(e.Creator),
 		Detail:       e.Detail,
 		LocationName: e.LocationName,
 		NeedRegis:    e.NeedRegis,

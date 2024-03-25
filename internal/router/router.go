@@ -9,9 +9,6 @@ import (
 )
 
 type AppRouter struct {
-	// notiController *NotiController
-	// userController *UsertController
-	// tagController *TagController
 	eventController *eventcontroller.EventController
 	userController  *usercontroller.UserController
 }

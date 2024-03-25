@@ -1,9 +1,9 @@
 -- name: UpdateUserByID :one
 UPDATE users SET
-                 name = COALESCE($1, name),
-                 social_id = COALESCE($2, social_id),
-                 email = COALESCE($3, email),
-                 profile_image = COALESCE($4, profile_image),
+                 name = COALESCE(sqlc.narg('name'), name),
+                 social_id = COALESCE(sqlc.narg('social_id'), social_id),
+                 email = COALESCE(sqlc.narg('email'), email),
+                 profile_image = COALESCE(sqlc.narg('profile_image'), profile_image),
                  updated_at = CURRENT_TIMESTAMP
-WHERE id = $5
+WHERE id = sqlc.arg('id')
 RETURNING *;

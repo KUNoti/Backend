@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/crypto/bcrypt"
+	"strconv"
 )
 
 type UserRepository struct {
@@ -58,7 +59,7 @@ func (ur UserRepository) Delete(ctx *gin.Context, deleteUserRequest userrequest.
 	if err != nil {
 		return "", err
 	}
-	return id.String(), nil
+	return strconv.Itoa(int(id)), nil
 }
 
 func (ur UserRepository) FindUserByID(ctx *gin.Context, finderUserRequest userrequest.FindUserByID) (user.User, error) {

@@ -17,13 +17,19 @@ type UpdateUserRequest struct {
 
 func CreateParamsFromUpdateUserRequest(cmd UpdateUserRequest) sqlc.UpdateUserByIDParams {
 	params := sqlc.UpdateUserByIDParams{
-		ID:   cmd.ID,
-		Name: cmd.Name,
+		ID: cmd.ID,
+		Name: pgtype.Text{
+			String: cmd.Name,
+			Valid:  cmd.Name != "",
+		},
 		SocialID: pgtype.Text{
 			String: cmd.SocialID,
 			Valid:  cmd.SocialID != "",
 		},
-		Email: cmd.Email,
+		Email: pgtype.Text{
+			String: cmd.Email,
+			Valid:  cmd.Email != "",
+		},
 		ProfileImage: pgtype.Text{
 			String: cmd.ProfileImage,
 			Valid:  cmd.ProfileImage != "",
