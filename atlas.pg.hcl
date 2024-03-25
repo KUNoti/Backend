@@ -77,10 +77,6 @@ table "users" {
     null = false
     type = varchar(255)
   }
-  column "role" {
-    null = false
-    type = character_varying(255)
-  }
   column "social_id" {
     null = true
     type = varchar(255)
