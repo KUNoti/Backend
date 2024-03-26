@@ -7,6 +7,7 @@ import (
 	"KUNoti/sqlc"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct {
@@ -18,6 +19,19 @@ func (userService UserService) Create(ctx *gin.Context, createUserRequest userre
 	if err != nil {
 		return nil, err
 	}
+	return &user, nil
+}
+
+func (userService UserService) Login(ctx *gin.Context, loginUserRequest userrequest.LoginUserRequest) (*user.User, error) {
+	user, err := userService.userRepository.FindUserByUsername(ctx, loginUserRequest.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	if !CheckPasswordHash(loginUserRequest.Password, user.Password) {
+		return nil, err
+	}
+
 	return &user, nil
 }
 
@@ -43,6 +57,11 @@ func (userService UserService) FindUserByID(ctx *gin.Context, findUserByIDReques
 		return nil, err
 	}
 	return &user, nil
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
 
 func NewUserService(db *pgxpool.Pool) *UserService {

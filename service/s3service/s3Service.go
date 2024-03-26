@@ -21,7 +21,7 @@ type S3Service struct {
 
 const (
 	EventImageFolder = "event"
-	//UserImageFolder  = "user"
+	UserImageFolder  = "user"
 )
 
 type S3ServiceConfig struct {
