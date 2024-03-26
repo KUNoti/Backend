@@ -19,7 +19,7 @@ type EventController struct {
 
 func (e EventController) CreateEvent(ctx *gin.Context) {
 	var createEventRequest eventrequest.CreateEventRequest
-	err := ctx.BindJSON(&createEventRequest)
+	err := ctx.ShouldBind(&createEventRequest)
 	if err != nil {
 		log.Println(err.Error())
 		log.Printf("Error: %v\n", err)
@@ -27,21 +27,13 @@ func (e EventController) CreateEvent(ctx *gin.Context) {
 		return
 	}
 
-	// Handle image upload
-	file, err := ctx.FormFile("userFile")
-	if err != nil {
-		log.Println("Error uploading image:", err)
-		ctx.JSON(http.StatusBadRequest, "Error uploading image")
-		return
-	}
-
-	// Save the uploaded image to the S3 amazon service
-	imageURL, err := e.s3.Upload(s3service.EventImageFolder, file)
+	imageURL, err := e.s3.Upload(s3service.EventImageFolder, createEventRequest.ImageFile)
 	if err != nil {
 		log.Println("Error saving image to S3:", err)
 		ctx.JSON(http.StatusInternalServerError, "Error saving image")
 		return
 	}
+
 	createEventRequest.Image = imageURL
 
 	event, err := e.es.Create(ctx, createEventRequest)
