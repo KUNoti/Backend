@@ -2,22 +2,27 @@ package eventrequest
 
 import (
 	"KUNoti/sqlc"
-	"github.com/jackc/pgx/v5/pgtype"
+	"mime/multipart"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type CreateEventRequest struct {
-	Title        string    `json:"title"`
-	Lat          float64   `json:"latitude"`
-	Lon          float64   `json:"longitude"`
-	StartDate    time.Time `json:"start_date_time"`
-	EndDate      time.Time `json:"end_date_time"`
-	Price        float64   `json:"price"`
-	Image        string    `json:"image"`
-	Creator      int       `json:"creator"`
-	Detail       string    `json:"detail"`
-	LocationName string    `json:"location_name"`
-	NeedRegis    bool      `json:"need_regis"`
+	Title        string                `form:"title"`
+	Lat          float64               `form:"latitude"`
+	Lon          float64               `form:"longitude"`
+	StartDate    time.Time             `form:"start_date_time"`
+	EndDate      time.Time             `form:"end_date_time"`
+	Price        float64               `form:"price"`
+	Image        string                `form:"image"`
+	Creator      int                   `form:"creator"`
+	Detail       string                `form:"detail"`
+	LocationName string                `form:"location_name"`
+	NeedRegis    bool                  `form:"need_regis"`
+	ImageFile    *multipart.FileHeader `form:"image_file"`
+	//Tag [list tag]
+	//User id
 }
 
 func CreateParamsFromCreateRequest(cmd CreateEventRequest) sqlc.CreateEventParams {

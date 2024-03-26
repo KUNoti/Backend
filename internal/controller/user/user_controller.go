@@ -2,9 +2,11 @@ package user
 
 import (
 	"KUNoti/internal/request/userrequest"
+	"KUNoti/service/s3service"
 	userservice "KUNoti/service/user"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/spf13/viper"
 	"log"
 	"net/http"
 	"strconv"
@@ -12,15 +14,31 @@ import (
 
 type UserController struct {
 	us *userservice.UserService
+	s3 *s3service.S3Service
 }
 
 func (u UserController) CreateUser(ctx *gin.Context) {
 	var createUserRequest userrequest.CreateUserRequest
-	err := ctx.BindJSON(&createUserRequest)
+	err := ctx.ShouldBind(&createUserRequest)
 	if err != nil {
 		log.Println(err.Error())
 		log.Printf("Error: %v\n", err)
-		ctx.JSON(http.StatusBadRequest, err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	imageURL, err := u.s3.Upload(s3service.UserImageFolder, createUserRequest.ProfileFile)
+	if err != nil {
+		log.Println("Error saving image to S3:", err)
+		ctx.JSON(http.StatusInternalServerError, "Error saving image")
+		return
+	}
+
+	createUserRequest.ProfileImage = imageURL
+
+	if err != nil {
+		log.Println("Error saving image to S3:", err)
+		ctx.JSON(http.StatusInternalServerError, "Error saving image")
 		return
 	}
 
@@ -33,6 +51,20 @@ func (u UserController) CreateUser(ctx *gin.Context) {
 	}
 
 	ctx.JSON(201, user)
+}
+
+func (u UserController) Login(ctx *gin.Context) {
+	var loginUserRequest userrequest.LoginUserRequest
+	err := ctx.ShouldBind(&loginUserRequest)
+
+	user, err := u.us.Login(ctx, loginUserRequest)
+	if err != nil {
+		log.Println(err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, user)
 }
 
 func (u UserController) UpdateUser(ctx *gin.Context) {
@@ -105,10 +137,26 @@ func (u UserController) InitEndpoints(r *gin.RouterGroup) {
 	userGroup.POST("/create", u.CreateUser)
 	userGroup.PUT("/update", u.UpdateUser)
 	userGroup.DELETE("/delete", u.DeleteUser)
+	userGroup.POST("/login", u.Login)
 }
 
 func NewUserController(db *pgxpool.Pool) *UserController {
+	viper.AutomaticEnv()
+
+	config := s3service.S3ServiceConfig{
+		Region:             viper.GetString("AWS_REGION"),
+		Bucket:             viper.GetString("AWS_BUCKET"),
+		AwsAccessKeyID:     viper.GetString("AWS_ACCESS_KEY_ID"),
+		AwsSecretAccessKey: viper.GetString("AWS_SECRET_ACCESS_KEY"),
+	}
+
+	s3service, err := s3service.NewS3Service(&config)
+	if err != nil {
+		log.Fatal("Failed to initialize S3 service:", err)
+	}
+
 	return &UserController{
 		us: userservice.NewUserService(db),
+		s3: s3service,
 	}
 }

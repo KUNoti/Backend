@@ -3,16 +3,18 @@ package userrequest
 import (
 	"KUNoti/sqlc"
 	"github.com/jackc/pgx/v5/pgtype"
+	"mime/multipart"
 	"time"
 )
 
 type CreateUserRequest struct {
-	Username     string `json:"username"`
-	Password     string `json:"password"`
-	Name         string `json:"name"`
-	SocialID     string `json:"social_id"`
-	Email        string `json:"email"`
-	ProfileImage string `json:"profile_image"`
+	Username     string                `form:"username"`
+	Password     string                `form:"password"`
+	Name         string                `form:"name"`
+	SocialID     string                `form:"social_id"`
+	Email        string                `form:"email"`
+	ProfileImage string                `form:"profile_image"`
+	ProfileFile  *multipart.FileHeader `form:"profile_file"`
 }
 
 func CreateParamsFromCreateUserRequest(cmd CreateUserRequest) sqlc.CreateUserParams {

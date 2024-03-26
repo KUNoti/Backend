@@ -3,8 +3,9 @@ package event
 import (
 	"KUNoti/internal/request/eventrequest"
 	eventservice "KUNoti/service/event"
+	"KUNoti/service/s3service"
+	"github.com/spf13/viper"
 	"log"
-
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,17 +14,27 @@ import (
 
 type EventController struct {
 	es *eventservice.EventService
+	s3 *s3service.S3Service
 }
 
 func (e EventController) CreateEvent(ctx *gin.Context) {
 	var createEventRequest eventrequest.CreateEventRequest
-	err := ctx.BindJSON(&createEventRequest)
+	err := ctx.ShouldBind(&createEventRequest)
 	if err != nil {
 		log.Println(err.Error())
 		log.Printf("Error: %v\n", err)
 		ctx.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+
+	imageURL, err := e.s3.Upload(s3service.EventImageFolder, createEventRequest.ImageFile)
+	if err != nil {
+		log.Println("Error saving image to S3:", err)
+		ctx.JSON(http.StatusInternalServerError, "Error saving image")
+		return
+	}
+
+	createEventRequest.Image = imageURL
 
 	event, err := e.es.Create(ctx, createEventRequest)
 	if err != nil {
@@ -106,7 +117,22 @@ func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 }
 
 func NewEventController(db *pgxpool.Pool) *EventController {
+	viper.AutomaticEnv()
+
+	config := s3service.S3ServiceConfig{
+		Region:             viper.GetString("AWS_REGION"),
+		Bucket:             viper.GetString("AWS_BUCKET"),
+		AwsAccessKeyID:     viper.GetString("AWS_ACCESS_KEY_ID"),
+		AwsSecretAccessKey: viper.GetString("AWS_SECRET_ACCESS_KEY"),
+	}
+
+	s3service, err := s3service.NewS3Service(&config)
+	if err != nil {
+		log.Fatal("Failed to initialize S3 service:", err)
+	}
+
 	return &EventController{
 		es: eventservice.NewEventService(db),
+		s3: s3service,
 	}
 }
