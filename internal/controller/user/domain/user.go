@@ -3,12 +3,12 @@ package domain
 import "KUNoti/sqlc"
 
 type User struct {
-	Name         string
-	Username     string
+	Name         string `json:"name"`
+	Username     string `json:"username"`
 	Password     string
-	Email        string
+	Email        string `json:"email"`
 	SocialID     string
-	ProfileImage string
+	ProfileImage string `json:"profile_image"`
 }
 
 func NewFromSqlc(u sqlc.User) User {
