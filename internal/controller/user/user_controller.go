@@ -42,7 +42,7 @@ func (u UserController) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	user, err := u.us.Create(ctx, createUserRequest)
+	_, err = u.us.Create(ctx, createUserRequest)
 	if err != nil {
 		log.Println(err.Error())
 		log.Printf("Error: %v\n", err)
@@ -50,7 +50,7 @@ func (u UserController) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(201, user)
+	ctx.JSON(201, nil)
 }
 
 func (u UserController) Login(ctx *gin.Context) {
@@ -63,7 +63,7 @@ func (u UserController) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	user.Password = ""
 	ctx.JSON(200, user)
 }
 
