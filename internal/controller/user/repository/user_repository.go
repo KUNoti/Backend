@@ -34,7 +34,7 @@ func (ur UserRepository) Create(ctx *gin.Context, createUserRequest userrequest.
 }
 
 func hashPassword(password string) (string, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
 		return "", err
 	}
@@ -64,6 +64,15 @@ func (ur UserRepository) Delete(ctx *gin.Context, deleteUserRequest userrequest.
 
 func (ur UserRepository) FindUserByID(ctx *gin.Context, finderUserRequest userrequest.FindUserByID) (user.User, error) {
 	userSqlc, err := ur.queries.FindUserByID(ctx, finderUserRequest.ID)
+	if err != nil {
+		return user.User{}, err
+	}
+	userConvert := user.NewFromSqlc(userSqlc)
+	return userConvert, nil
+}
+
+func (ur UserRepository) FindUserByUsername(ctx *gin.Context, finderUserRequest string) (user.User, error) {
+	userSqlc, err := ur.queries.FindUserByUsername(ctx, finderUserRequest)
 	if err != nil {
 		return user.User{}, err
 	}
