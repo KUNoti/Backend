@@ -18,6 +18,7 @@ type UpdateEventRequest struct {
 	LocationName string    `json:"location_name"`
 	NeedRegis    *bool     `json:"need_regis"`
 	ID           int32     `json:"id"`
+	Tag          string    `json:"tag"`
 }
 
 func CreateParamsFromUpdateRequest(cmd UpdateEventRequest) sqlc.UpdateEventByIDParams {
@@ -58,6 +59,10 @@ func CreateParamsFromUpdateRequest(cmd UpdateEventRequest) sqlc.UpdateEventByIDP
 		LocationName: pgtype.Text{
 			String: cmd.LocationName,
 			Valid:  cmd.LocationName != "",
+		},
+		Tag: pgtype.Text{
+			String: cmd.Tag,
+			Valid:  cmd.Tag != "",
 		},
 	}
 	if cmd.NeedRegis != nil {

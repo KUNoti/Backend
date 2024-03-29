@@ -6,6 +6,7 @@ longitude = COALESCE(sqlc.narg('longitude'), longitude),
 start_date = COALESCE(sqlc.narg('start_date'), start_date),
 end_date = COALESCE(sqlc.narg('end_date'), end_date),
 price = COALESCE(sqlc.narg('price'), price),
+tag = COALESCE(sqlc.narg('tag'), tag),
 -- imgae
 creator = COALESCE(sqlc.narg('creator'), creator),
 detail = COALESCE(sqlc.narg('detail'), detail),

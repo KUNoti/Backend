@@ -112,7 +112,7 @@ table "users" {
   }
 }
 
-table "following_event" {
+table "following_events" {
   schema = schema.public
   column "id" {
     null = false

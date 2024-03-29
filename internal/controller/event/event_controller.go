@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -107,6 +108,31 @@ func (e EventController) Events(ctx *gin.Context) {
 	ctx.JSON(200, events)
 }
 
+func (e EventController) FollowEvent(ctx *gin.Context) {
+	var followEventRequest eventrequest.FollowEventRequest
+	err := ctx.BindJSON(&followEventRequest)
+	followE, err := e.es.Follow(ctx, followEventRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	str := "User ID: " + strconv.Itoa(followE.UserID) + " following Event ID: " + strconv.Itoa(followE.EventID)
+	ctx.JSON(200, str)
+}
+
+func (e EventController) UnFollowEvent(ctx *gin.Context) {
+	var unfollowEventRequest eventrequest.UnfollowEventRequest
+	err := ctx.BindJSON(&unfollowEventRequest)
+	id, err := e.es.Unfollow(ctx, unfollowEventRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(200, "unfollow event ID : "+id)
+}
+
 func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup := r.Group("/event")
 	eventGroup.POST("/create", e.CreateEvent)
@@ -114,6 +140,8 @@ func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup.DELETE("/delete", e.DeleteEvent)
 	eventGroup.GET("", e.FinderEvent)
 	eventGroup.GET("/events", e.Events)
+	eventGroup.POST("/follow", e.FollowEvent)
+	eventGroup.DELETE("/unfollow", e.UnFollowEvent)
 }
 
 func NewEventController(db *pgxpool.Pool) *EventController {

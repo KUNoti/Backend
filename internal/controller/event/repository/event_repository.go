@@ -2,10 +2,12 @@ package repository
 
 import (
 	event "KUNoti/internal/controller/event/domain"
+	followevent "KUNoti/internal/controller/event/followevent/domain"
 	"KUNoti/internal/request/eventrequest"
 	"KUNoti/sqlc"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"strconv"
 )
 
 type EventRepository struct {
@@ -67,6 +69,27 @@ func (er EventRepository) FindAll(ctx *gin.Context) ([]event.Event, error) {
 		eventConvert[i] = event.NewFromSqlc(e)
 	}
 	return eventConvert, nil
+}
+
+func (er EventRepository) FollowEvent(ctx *gin.Context, followEventRequest eventrequest.FollowEventRequest) (followevent.FollowEvent, error) {
+	arg := eventrequest.CrateParamsFromFollowRequest(followEventRequest)
+
+	followEventSqlcs, err := er.queries.FollowEvent(ctx, arg)
+	if err != nil {
+		return followevent.FollowEvent{}, err
+	}
+	followConvert := followevent.NewFromSqlc(followEventSqlcs)
+	return followConvert, nil
+}
+
+func (er EventRepository) UnfollowEvent(ctx *gin.Context, unfollow eventrequest.UnfollowEventRequest) (string, error) {
+	arg := eventrequest.CrateParamsFromUnfollowRequest(unfollow)
+
+	eventId, err := er.queries.UnfollowEvent(ctx, arg)
+	if err != nil {
+		return "", err
+	}
+	return strconv.Itoa(int(eventId)), nil
 }
 
 func NewEventRepository(db *pgxpool.Pool, queries *sqlc.Queries) *EventRepository {
