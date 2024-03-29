@@ -21,8 +21,7 @@ type CreateEventRequest struct {
 	LocationName string                `form:"location_name"`
 	NeedRegis    bool                  `form:"need_regis"`
 	ImageFile    *multipart.FileHeader `form:"image_file"`
-	//Tag [list tag]
-	//User id
+	Tag          string                `form:"tag"`
 }
 
 func CreateParamsFromCreateRequest(cmd CreateEventRequest) sqlc.CreateEventParams {
@@ -47,5 +46,9 @@ func CreateParamsFromCreateRequest(cmd CreateEventRequest) sqlc.CreateEventParam
 		Detail:       cmd.Detail,
 		LocationName: cmd.LocationName,
 		NeedRegis:    cmd.NeedRegis,
+		Tag: pgtype.Text{
+			String: cmd.Tag,
+			Valid:  cmd.Tag != "",
+		},
 	}
 }

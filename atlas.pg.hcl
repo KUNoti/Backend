@@ -112,6 +112,35 @@ table "users" {
   }
 }
 
+table "following_events" {
+  schema = schema.public
+  column "id" {
+    null = false
+    type = serial
+  }
+  column "event_id" {
+    null = false
+    type = int
+  }
+  column "user_id" {
+    null = false
+    type = int
+  }
+  column "created_at" {
+    null    = false
+    type    = timestamp(3)
+    default = sql("CURRENT_TIMESTAMP")
+  }
+  column "updated_at" {
+    null    = false
+    type    = timestamp(3)
+    default = sql("CURRENT_TIMESTAMP")
+  }
+  primary_key {
+    columns = [column.id]
+  }
+}
+
 schema "public" {
   comment = "standard public schema"
 }
