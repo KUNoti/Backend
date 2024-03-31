@@ -21,6 +21,7 @@ type Event struct {
 	Detail       string    `json:"detail"`
 	LocationName string    `json:"location_name"`
 	NeedRegis    bool      `json:"need_regis"`
+	Tag          string    `json:"tag"`
 }
 
 func NewFromSqlc(e sqlc.Event) Event {
@@ -41,6 +42,9 @@ func NewFromSqlc(e sqlc.Event) Event {
 	}
 	if e.Image.Valid {
 		event.Image = e.Image.String
+	}
+	if e.Tag.Valid {
+		event.Tag = e.Tag.String
 	}
 	return event
 }
