@@ -92,6 +92,23 @@ func (er EventRepository) UnfollowEvent(ctx *gin.Context, unfollow eventrequest.
 	return strconv.Itoa(int(eventId)), nil
 }
 
+func (er EventRepository) FollowEvents(ctx *gin.Context, userID int) ([]event.Event, error) {
+	followEvents, err := er.queries.FindAllFollowEvent(ctx, int32(userID))
+	if err != nil {
+		return nil, err
+	}
+	events := make([]event.Event, len(followEvents))
+
+	for i, e := range followEvents {
+		eventSqlc, err := er.queries.FindEventByID(ctx, e.EventID)
+		if err != nil {
+			return nil, err
+		}
+		events[i] = event.NewFromSqlc(eventSqlc)
+	}
+	return events, nil
+}
+
 func NewEventRepository(db *pgxpool.Pool, queries *sqlc.Queries) *EventRepository {
 	return &EventRepository{
 		DB:      db,

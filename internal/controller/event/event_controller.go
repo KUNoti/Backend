@@ -133,6 +133,18 @@ func (e EventController) UnFollowEvent(ctx *gin.Context) {
 	ctx.JSON(200, "unfollow event ID : "+id)
 }
 
+func (e EventController) FollowEvents(ctx *gin.Context) {
+	var findFollowEventRequest eventrequest.FindFollowEventRequest
+	err := ctx.BindJSON(&findFollowEventRequest)
+	events, err := e.es.FindFollowEvent(ctx, findFollowEventRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(200, events)
+}
+
 func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup := r.Group("/event")
 	eventGroup.POST("/create", e.CreateEvent)
@@ -142,6 +154,7 @@ func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup.GET("/events", e.Events)
 	eventGroup.POST("/follow", e.FollowEvent)
 	eventGroup.DELETE("/unfollow", e.UnFollowEvent)
+	eventGroup.GET("/follow_events", e.FollowEvents)
 }
 
 func NewEventController(db *pgxpool.Pool) *EventController {

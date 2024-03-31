@@ -70,6 +70,14 @@ func (eventService EventService) Unfollow(ctx *gin.Context, unfollowEventRequest
 	return eventID, nil
 }
 
+func (eventService EventService) FindFollowEvent(ctx *gin.Context, userID eventrequest.FindFollowEventRequest) ([]event.Event, error) {
+	events, err := eventService.eventRepository.FollowEvents(ctx, userID.UserID)
+	if err != nil {
+		return nil, err
+	}
+	return events, nil
+}
+
 func NewEventService(db *pgxpool.Pool) *EventService {
 	queries := sqlc.New(db)
 	return &EventService{
