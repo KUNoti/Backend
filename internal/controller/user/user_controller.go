@@ -36,12 +36,6 @@ func (u UserController) CreateUser(ctx *gin.Context) {
 
 	createUserRequest.ProfileImage = imageURL
 
-	if err != nil {
-		log.Println("Error saving image to S3:", err)
-		ctx.JSON(http.StatusInternalServerError, "Error saving image")
-		return
-	}
-
 	_, err = u.us.Create(ctx, createUserRequest)
 	if err != nil {
 		log.Println(err.Error())

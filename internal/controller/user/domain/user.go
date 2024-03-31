@@ -3,6 +3,7 @@ package domain
 import "KUNoti/sqlc"
 
 type User struct {
+	ID           int32  `json:"id"`
 	Name         string `json:"name"`
 	Username     string `json:"username"`
 	Password     string
@@ -13,6 +14,7 @@ type User struct {
 
 func NewFromSqlc(u sqlc.User) User {
 	user := User{
+		ID:       u.ID,
 		Name:     u.Name,
 		Username: u.Username,
 		Password: u.Password,
