@@ -5,9 +5,12 @@ import (
 	"KUNoti/pkg/middleware"
 	"context"
 	"errors"
+	"fmt"
+	"google.golang.org/api/option"
 	"log"
 	"net/http"
 
+	firebase "firebase.google.com/go/v4"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/spf13/viper"
@@ -57,8 +60,13 @@ func main() {
 		middleware.TimeoutMiddleware(),
 	)
 
+	firebaseApp, err := initializeFirebaseApp()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	routerGroup := r.Group("")
-	router := router.NewAppRouter(db)
+	router := router.NewAppRouter(db, firebaseApp)
 	router.InitEndpoints(routerGroup)
 
 	port := viper.GetString("SERVER_PORT")
@@ -67,4 +75,14 @@ func main() {
 	}
 	log.Println("Server started on http://localhost:", port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
+}
+
+func initializeFirebaseApp() (*firebase.App, error) {
+	opt := option.WithCredentialsFile("/Users/premkul/Documents/Workspace/final-project/Backend/ServiceAccount.json")
+	app, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		return nil, fmt.Errorf("error initializing app: %v", err)
+	}
+
+	return app, nil
 }
