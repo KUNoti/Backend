@@ -3,6 +3,7 @@ package event
 import (
 	"KUNoti/internal/request/eventrequest"
 	eventservice "KUNoti/service/event"
+	"KUNoti/service/firebaseService"
 	"KUNoti/service/s3service"
 	"github.com/spf13/viper"
 	"log"
@@ -16,6 +17,7 @@ import (
 type EventController struct {
 	es *eventservice.EventService
 	s3 *s3service.S3Service
+	fb firebaseService.FireBaseService
 }
 
 func (e EventController) CreateEvent(ctx *gin.Context) {
@@ -41,6 +43,11 @@ func (e EventController) CreateEvent(ctx *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	}
+
+	//
+	// Tag?
+
+	// function check tag return token
 
 	ctx.JSON(201, event)
 }
@@ -105,6 +112,7 @@ func (e EventController) Events(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
+	e.fb.SendToToken(ctx)
 	ctx.JSON(200, events)
 }
 
@@ -157,7 +165,7 @@ func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup.GET("/follow_events", e.FollowEvents)
 }
 
-func NewEventController(db *pgxpool.Pool) *EventController {
+func NewEventController(db *pgxpool.Pool, firebaseService firebaseService.FireBaseService) *EventController {
 	viper.AutomaticEnv()
 
 	config := s3service.S3ServiceConfig{
@@ -175,5 +183,6 @@ func NewEventController(db *pgxpool.Pool) *EventController {
 	return &EventController{
 		es: eventservice.NewEventService(db),
 		s3: s3service,
+		fb: firebaseService,
 	}
 }
