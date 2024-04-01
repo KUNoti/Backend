@@ -4,7 +4,6 @@ import (
 	"KUNoti/sqlc"
 	"github.com/jackc/pgx/v5/pgtype"
 	"mime/multipart"
-	"time"
 )
 
 type CreateUserRequest struct {
@@ -15,6 +14,7 @@ type CreateUserRequest struct {
 	Email        string                `form:"email"`
 	ProfileImage string                `form:"profile_image"`
 	ProfileFile  *multipart.FileHeader `form:"profile_file"`
+	Token        string                `form:"token"`
 }
 
 func CreateParamsFromCreateUserRequest(cmd CreateUserRequest) sqlc.CreateUserParams {
@@ -31,17 +31,6 @@ func CreateParamsFromCreateUserRequest(cmd CreateUserRequest) sqlc.CreateUserPar
 			String: cmd.ProfileImage,
 			Valid:  cmd.ProfileImage != "",
 		},
+		Token: cmd.Token,
 	}
-}
-
-type User struct {
-	ID           int
-	Username     string
-	Password     string
-	Name         string
-	SocialID     string
-	Email        string
-	ProfileImage string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
 }
