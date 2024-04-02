@@ -119,6 +119,11 @@ func (e EventController) Events(ctx *gin.Context) {
 func (e EventController) FollowEvent(ctx *gin.Context) {
 	var followEventRequest eventrequest.FollowEventRequest
 	err := ctx.BindJSON(&followEventRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
 	followE, err := e.es.Follow(ctx, followEventRequest)
 	if err != nil {
 		log.Println(err)
@@ -132,6 +137,11 @@ func (e EventController) FollowEvent(ctx *gin.Context) {
 func (e EventController) UnFollowEvent(ctx *gin.Context) {
 	var unfollowEventRequest eventrequest.UnfollowEventRequest
 	err := ctx.BindJSON(&unfollowEventRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
 	id, err := e.es.Unfollow(ctx, unfollowEventRequest)
 	if err != nil {
 		log.Println(err)
@@ -144,6 +154,11 @@ func (e EventController) UnFollowEvent(ctx *gin.Context) {
 func (e EventController) FollowEvents(ctx *gin.Context) {
 	var findFollowEventRequest eventrequest.FindFollowEventRequest
 	err := ctx.BindJSON(&findFollowEventRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
 	events, err := e.es.FindFollowEvent(ctx, findFollowEventRequest)
 	if err != nil {
 		log.Println(err)
@@ -151,6 +166,42 @@ func (e EventController) FollowEvents(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, events)
+}
+
+func (e EventController) FollowTag(ctx *gin.Context) {
+	var followTagRequest eventrequest.FollowTagRequest
+	err := ctx.BindJSON(&followTagRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	followT, err := e.es.FollowTag(ctx, followTagRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	str := "Tag: " + followT.Tag
+	ctx.JSON(200, str)
+}
+
+func (e EventController) UnFollowTag(ctx *gin.Context) {
+	var unFollowTagRequest eventrequest.UnFollowTagRequest
+	err := ctx.BindJSON(&unFollowTagRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	tag, err := e.es.UnfollowTag(ctx, unFollowTagRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(200, "unfollow tag: "+tag)
 }
 
 func (e EventController) InitEndpoints(r *gin.RouterGroup) {
@@ -163,6 +214,8 @@ func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup.POST("/follow", e.FollowEvent)
 	eventGroup.DELETE("/unfollow", e.UnFollowEvent)
 	eventGroup.GET("/follow_events", e.FollowEvents)
+	eventGroup.POST("/follow_tag", e.FollowTag)
+	eventGroup.DELETE("/unfollow_tag", e.UnFollowTag)
 }
 
 func NewEventController(db *pgxpool.Pool, firebaseService firebaseService.FireBaseService) *EventController {

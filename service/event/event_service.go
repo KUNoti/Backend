@@ -2,6 +2,7 @@ package eventservice
 
 import (
 	event "KUNoti/internal/controller/event/domain"
+	followtag "KUNoti/internal/controller/event/followbytag/domain"
 	followevent "KUNoti/internal/controller/event/followevent/domain"
 	"KUNoti/internal/controller/event/repository"
 	"KUNoti/internal/request/eventrequest"
@@ -76,6 +77,22 @@ func (eventService EventService) FindFollowEvent(ctx *gin.Context, userID eventr
 		return nil, err
 	}
 	return events, nil
+}
+
+func (eventService EventService) FollowTag(ctx *gin.Context, request eventrequest.FollowTagRequest) (followtag.FollowByTag, error) {
+	followT, err := eventService.eventRepository.FollowTag(ctx, request)
+	if err != nil {
+		return followtag.FollowByTag{}, err
+	}
+	return followT, nil
+}
+
+func (eventService EventService) UnfollowTag(ctx *gin.Context, request eventrequest.UnFollowTagRequest) (string, error) {
+	tag, err := eventService.eventRepository.UnfollowTag(ctx, request)
+	if err != nil {
+		return "", err
+	}
+	return tag, nil
 }
 
 func NewEventService(db *pgxpool.Pool) *EventService {

@@ -5,6 +5,7 @@ sql:
        - "internal/controller/user/sql"
        - "internal/controller/event/sql"
        - "internal/controller/event/followevent/sql"
+       - "internal/controller/event/followbytag/sql"
 
    
     schema: "schema.sql"
