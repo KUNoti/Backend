@@ -26,6 +26,14 @@ type Event struct {
 	Creator      int32            `json:"creator"`
 }
 
+type FollowByTag struct {
+	ID        int32            `json:"id"`
+	Tag       string           `json:"tag"`
+	UserToken string           `json:"user_token"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+}
+
 type FollowingEvent struct {
 	ID        int32            `json:"id"`
 	EventID   int32            `json:"event_id"`

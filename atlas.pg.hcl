@@ -145,6 +145,37 @@ table "following_events" {
   }
 }
 
+table "follow_by_tag" {
+  schema = schema.public
+  column "id" {
+    null = false
+    type = serial
+  }
+  column "tag" {
+    null = false
+    type = character_varying(255)
+  }
+  column "user_token" {
+    null = false
+    type = character_varying(255)
+  }
+  column "created_at" {
+    null    = false
+    type    = timestamp(3)
+    default = sql("CURRENT_TIMESTAMP")
+  }
+  column "updated_at" {
+    null    = false
+    type    = timestamp(3)
+    default = sql("CURRENT_TIMESTAMP")
+  }
+  primary_key {
+    columns = [column.id]
+  }
+}
+
+
 schema "public" {
   comment = "standard public schema"
 }
+
