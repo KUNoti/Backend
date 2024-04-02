@@ -112,7 +112,7 @@ func (e EventController) Events(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
-	e.fb.SendToToken(ctx)
+
 	ctx.JSON(200, events)
 }
 
