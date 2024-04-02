@@ -2,6 +2,7 @@ package repository
 
 import (
 	event "KUNoti/internal/controller/event/domain"
+	followByTag "KUNoti/internal/controller/event/followbytag/domain"
 	followevent "KUNoti/internal/controller/event/followevent/domain"
 	"KUNoti/internal/request/eventrequest"
 	"KUNoti/sqlc"
@@ -119,6 +120,34 @@ func (er EventRepository) FindEventCreatedByID(ctx *gin.Context, userID int) ([]
 		events[i] = event.NewFromSqlc(e)
 	}
 	return events, nil
+}
+
+func (er EventRepository) FollowTag(ctx *gin.Context, request eventrequest.FollowTagRequest) (followByTag.FollowByTag, error) {
+	arg := eventrequest.CreateParamsFromFollowTagRequest(request)
+	followTagSqlc, err := er.queries.FollowTag(ctx, arg)
+	if err != nil {
+		return followByTag.FollowByTag{}, err
+	}
+	followConvert := followByTag.NewFromSqlc(followTagSqlc)
+	return followConvert, nil
+}
+
+func (er EventRepository) UnfollowTag(ctx *gin.Context, request eventrequest.UnFollowTagRequest) (string, error) {
+	arg := eventrequest.CreateParamsFromUnFollowTagRequest(request)
+
+	err := er.queries.UnfollowTag(ctx, arg)
+	if err != nil {
+		return "", err
+	}
+	return "unfollow success", nil
+}
+
+func (er EventRepository) FindTokensByTagName(ctx *gin.Context, tag string) ([]string, error) {
+	tokens, err := er.queries.FindTokensByTagName(ctx, tag)
+	if err != nil {
+		return nil, err
+	}
+	return tokens, nil
 }
 
 func NewEventRepository(db *pgxpool.Pool, queries *sqlc.Queries) *EventRepository {
