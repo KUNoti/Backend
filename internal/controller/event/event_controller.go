@@ -168,6 +168,7 @@ func (e EventController) FollowEvents(ctx *gin.Context) {
 	ctx.JSON(200, events)
 }
 
+
 func (e EventController) FindEventCreatedByMe(ctx *gin.Context) {
 	var findEventCreatedByMeRequest eventrequest.FindEventCreatedByMeRequest
 	err := ctx.BindJSON(&findEventCreatedByMeRequest)
@@ -179,6 +180,7 @@ func (e EventController) FindEventCreatedByMe(ctx *gin.Context) {
 	}
 	ctx.JSON(200, events)
 }
+
 func (e EventController) FollowTag(ctx *gin.Context) {
 	var followTagRequest eventrequest.FollowTagRequest
 	err := ctx.BindJSON(&followTagRequest)
