@@ -78,6 +78,14 @@ func (eventService EventService) FindFollowEvent(ctx *gin.Context, userID eventr
 	return events, nil
 }
 
+func (eventService EventService) FindEventCreatedByMe(ctx *gin.Context, userID eventrequest.FindEventCreatedByMeRequest) ([]event.Event, error) {
+	events, err := eventService.eventRepository.FindEventCreatedByID(ctx, userID.UserID)
+	if err != nil {
+		return nil, err
+	}
+	return events, nil
+}
+
 func NewEventService(db *pgxpool.Pool) *EventService {
 	queries := sqlc.New(db)
 	return &EventService{
