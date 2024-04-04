@@ -110,6 +110,18 @@ func (er EventRepository) FollowEvents(ctx *gin.Context, userID int) ([]event.Ev
 	return events, nil
 }
 
+func (er EventRepository) FindEventCreatedByID(ctx *gin.Context, userID int) ([]event.Event, error) {
+	createdEventByMe, err := er.queries.FindEventCreatedByID(ctx, int32(userID))
+	if err != nil {
+		return nil, err
+	}
+	events := make([]event.Event, len(createdEventByMe))
+	for i, e := range createdEventByMe {
+		events[i] = event.NewFromSqlc(e)
+	}
+	return events, nil
+}
+
 func (er EventRepository) FollowTag(ctx *gin.Context, request eventrequest.FollowTagRequest) (followByTag.FollowByTag, error) {
 	arg := eventrequest.CreateParamsFromFollowTagRequest(request)
 	followTagSqlc, err := er.queries.FollowTag(ctx, arg)

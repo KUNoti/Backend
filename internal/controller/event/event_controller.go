@@ -168,6 +168,19 @@ func (e EventController) FollowEvents(ctx *gin.Context) {
 	ctx.JSON(200, events)
 }
 
+
+func (e EventController) FindEventCreatedByMe(ctx *gin.Context) {
+	var findEventCreatedByMeRequest eventrequest.FindEventCreatedByMeRequest
+	err := ctx.BindJSON(&findEventCreatedByMeRequest)
+	events, err := e.es.FindEventCreatedByMe(ctx, findEventCreatedByMeRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(200, events)
+}
+
 func (e EventController) FollowTag(ctx *gin.Context) {
 	var followTagRequest eventrequest.FollowTagRequest
 	err := ctx.BindJSON(&followTagRequest)
@@ -214,6 +227,7 @@ func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup.POST("/follow", e.FollowEvent)
 	eventGroup.DELETE("/unfollow", e.UnFollowEvent)
 	eventGroup.GET("/follow_events", e.FollowEvents)
+	eventGroup.GET("/created_by_me", e.FindEventCreatedByMe)
 	eventGroup.POST("/follow_tag", e.FollowTag)
 	eventGroup.DELETE("/unfollow_tag", e.UnFollowTag)
 }

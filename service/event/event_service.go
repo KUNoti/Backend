@@ -79,6 +79,14 @@ func (eventService EventService) FindFollowEvent(ctx *gin.Context, userID eventr
 	return events, nil
 }
 
+func (eventService EventService) FindEventCreatedByMe(ctx *gin.Context, userID eventrequest.FindEventCreatedByMeRequest) ([]event.Event, error) {
+	events, err := eventService.eventRepository.FindEventCreatedByID(ctx, userID.UserID)
+	if err != nil {
+		return nil, err
+	}
+	return events, nil
+}
+
 func (eventService EventService) FollowTag(ctx *gin.Context, request eventrequest.FollowTagRequest) (followtag.FollowByTag, error) {
 	followT, err := eventService.eventRepository.FollowTag(ctx, request)
 	if err != nil {
