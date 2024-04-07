@@ -217,6 +217,40 @@ func (e EventController) UnFollowTag(ctx *gin.Context) {
 	ctx.JSON(200, "unfollow tag: "+tag)
 }
 
+func (e EventController) RegisEvent(ctx *gin.Context) {
+	var regisEventRequest eventrequest.RegisEventRequest
+	err := ctx.BindJSON(&regisEventRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	regisE, err := e.es.RegisEvent(ctx, regisEventRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(200, regisE)
+}
+
+func (e EventController) RegisEvents(ctx *gin.Context) {
+	var regisEventRequest eventrequest.RegisEventRequest
+	err := ctx.BindJSON(&regisEventRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	regisEvents, err := e.es.FindRegisEvent(ctx, regisEventRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(200, regisEvents)
+}
+
 func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup := r.Group("/event")
 	eventGroup.POST("/create", e.CreateEvent)
@@ -230,6 +264,8 @@ func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup.GET("/created_by_me", e.FindEventCreatedByMe)
 	eventGroup.POST("/follow_tag", e.FollowTag)
 	eventGroup.DELETE("/unfollow_tag", e.UnFollowTag)
+	eventGroup.POST("/regis_event", e.RegisEvent)
+	eventGroup.GET("/regis_events", e.RegisEvents)
 }
 
 func NewEventController(db *pgxpool.Pool, firebaseService firebaseService.FireBaseService) *EventController {

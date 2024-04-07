@@ -22,6 +22,8 @@ type Event struct {
 	LocationName string    `json:"location_name"`
 	NeedRegis    bool      `json:"need_regis"`
 	Tag          string    `json:"tag"`
+	RegisAmount  int       `json:"regis_amount"`
+	RegisMax     int       `json:"regis_max"`
 }
 
 func NewFromSqlc(e sqlc.Event) Event {
@@ -45,6 +47,12 @@ func NewFromSqlc(e sqlc.Event) Event {
 	}
 	if e.Tag.Valid {
 		event.Tag = e.Tag.String
+	}
+	if e.RegisAmount.Valid {
+		event.RegisAmount = int(e.RegisAmount.Int32)
+	}
+	if e.RegisMax.Valid {
+		event.RegisMax = int(e.RegisMax.Int32)
 	}
 	return event
 }
