@@ -19,6 +19,8 @@ type UpdateEventRequest struct {
 	NeedRegis    *bool     `json:"need_regis"`
 	ID           int32     `json:"id"`
 	Tag          string    `json:"tag"`
+	RegisAmount  int       `json:"regis_amount"`
+	RegisMax     int       `json:"regis_max"`
 }
 
 func CreateParamsFromUpdateRequest(cmd UpdateEventRequest) sqlc.UpdateEventByIDParams {
@@ -63,6 +65,14 @@ func CreateParamsFromUpdateRequest(cmd UpdateEventRequest) sqlc.UpdateEventByIDP
 		Tag: pgtype.Text{
 			String: cmd.Tag,
 			Valid:  cmd.Tag != "",
+		},
+		RegisAmount: pgtype.Int4{
+			Int32: int32(cmd.RegisAmount),
+			Valid: cmd.RegisAmount != 0,
+		},
+		RegisMax: pgtype.Int4{
+			Int32: int32(cmd.RegisMax),
+			Valid: cmd.RegisMax != 0,
 		},
 	}
 	if cmd.NeedRegis != nil {

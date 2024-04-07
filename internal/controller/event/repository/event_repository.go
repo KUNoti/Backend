@@ -150,6 +150,35 @@ func (er EventRepository) FindTokensByTagName(ctx *gin.Context, tag string) ([]s
 	return tokens, nil
 }
 
+func (er EventRepository) RegisEvent(ctx *gin.Context, request eventrequest.RegisEventRequest) (string, error) {
+	arg := eventrequest.CrateParamsFromRegisRequest(request)
+	_, err := er.queries.RegisEventByID(ctx, arg.EventID)
+	if err != nil {
+		return "", err
+	}
+	_, err = er.queries.CreateRegisEvent(ctx, arg)
+	if err != nil {
+		return "", err
+	}
+	return "regis success", nil
+}
+
+func (er EventRepository) FindRegisEventByUserID(ctx *gin.Context, userID int) ([]event.Event, error) {
+	regisEventByMe, err := er.queries.FindRegisEventByUserID(ctx, int32(userID))
+	if err != nil {
+		return nil, err
+	}
+	events := make([]event.Event, len(regisEventByMe))
+	for i, re := range regisEventByMe {
+		e, err := er.queries.FindEventByID(ctx, re.EventID)
+		if err != nil {
+			return nil, err
+		}
+		events[i] = event.NewFromSqlc(e)
+	}
+	return events, nil
+}
+
 func NewEventRepository(db *pgxpool.Pool, queries *sqlc.Queries) *EventRepository {
 	return &EventRepository{
 		DB:      db,

@@ -103,6 +103,22 @@ func (eventService EventService) UnfollowTag(ctx *gin.Context, request eventrequ
 	return tag, nil
 }
 
+func (eventService EventService) RegisEvent(ctx *gin.Context, request eventrequest.RegisEventRequest) (string, error) {
+	regis, err := eventService.eventRepository.RegisEvent(ctx, request)
+	if err != nil {
+		return "", err
+	}
+	return regis, nil
+}
+
+func (eventService EventService) FindRegisEvent(ctx *gin.Context, request eventrequest.RegisEventRequest) ([]event.Event, error) {
+	events, err := eventService.eventRepository.FindRegisEventByUserID(ctx, request.UserID)
+	if err != nil {
+		return nil, err
+	}
+	return events, nil
+}
+
 func NewEventService(db *pgxpool.Pool) *EventService {
 	queries := sqlc.New(db)
 	return &EventService{
