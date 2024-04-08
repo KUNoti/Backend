@@ -211,6 +211,43 @@ table "regis_events" {
   }
 }
 
+table "notifications" {
+  schema = schema.public
+  column "id" {
+    null = false
+    type = serial
+  }
+  column "title" {
+    null = false
+    type = character_varying(255)
+  }
+  column "body" {
+    null = false
+    type = character_varying(255)
+  }
+  column "data" {
+    null = false
+    type = json
+  }
+  column "token" {
+    null = false
+    type = character_varying(255)
+  }
+  column "created_at" {
+    null    = false
+    type    = timestamp(3)
+    default = sql("CURRENT_TIMESTAMP")
+  }
+  column "updated_at" {
+    null    = false
+    type    = timestamp(3)
+    default = sql("CURRENT_TIMESTAMP")
+  }
+  primary_key {
+    columns = [column.id]
+  }
+}
+
 schema "public" {
   comment = "standard public schema"
 }
