@@ -10,7 +10,7 @@ import (
 )
 
 const findEventCreatedByID = `-- name: FindEventCreatedByID :many
-SELECT id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator
+SELECT id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator, regis_amount, regis_max
 FROM events
 WHERE creator = $1
 ORDER BY id DESC
@@ -41,6 +41,8 @@ func (q *Queries) FindEventCreatedByID(ctx context.Context, creator int32) ([]Ev
 			&i.NeedRegis,
 			&i.Tag,
 			&i.Creator,
+			&i.RegisAmount,
+			&i.RegisMax,
 		); err != nil {
 			return nil, err
 		}

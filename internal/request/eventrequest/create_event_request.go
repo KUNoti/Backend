@@ -22,6 +22,8 @@ type CreateEventRequest struct {
 	NeedRegis    bool                  `form:"need_regis"`
 	ImageFile    *multipart.FileHeader `form:"image_file"`
 	Tag          string                `form:"tag"`
+	RegisAmount  int                   `form:"regis_amount"`
+	RegisMax     int                   `form:"regis_max"`
 }
 
 func CreateParamsFromCreateRequest(cmd CreateEventRequest) sqlc.CreateEventParams {
@@ -49,6 +51,14 @@ func CreateParamsFromCreateRequest(cmd CreateEventRequest) sqlc.CreateEventParam
 		Tag: pgtype.Text{
 			String: cmd.Tag,
 			Valid:  cmd.Tag != "",
+		},
+		RegisAmount: pgtype.Int4{
+			Int32: int32(cmd.RegisAmount),
+			Valid: cmd.RegisAmount != 0,
+		},
+		RegisMax: pgtype.Int4{
+			Int32: int32(cmd.RegisMax),
+			Valid: cmd.RegisMax != 0,
 		},
 	}
 }

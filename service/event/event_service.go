@@ -7,9 +7,10 @@ import (
 	"KUNoti/internal/controller/event/repository"
 	"KUNoti/internal/request/eventrequest"
 	"KUNoti/sqlc"
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"log"
 )
 
 type EventService struct {
@@ -120,6 +121,22 @@ func (eventService EventService) FindTagByToken(ctx *gin.Context, request eventr
 		return nil, err
 	}
 	return tag, err
+}
+
+func (eventService EventService) RegisEvent(ctx *gin.Context, request eventrequest.RegisEventRequest) (string, error) {
+	regis, err := eventService.eventRepository.RegisEvent(ctx, request)
+	if err != nil {
+		return "", err
+	}
+	return regis, nil
+}
+
+func (eventService EventService) FindRegisEvent(ctx *gin.Context, request eventrequest.RegisEventRequest) ([]event.Event, error) {
+	events, err := eventService.eventRepository.FindRegisEventByUserID(ctx, request.UserID)
+	if err != nil {
+		return nil, err
+	}
+	return events, nil
 }
 
 func NewEventService(db *pgxpool.Pool) *EventService {
