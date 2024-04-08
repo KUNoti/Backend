@@ -7,6 +7,7 @@ sql:
        - "internal/controller/event/followevent/sql"
        - "internal/controller/event/followbytag/sql"
        - "internal/controller/event/regisevent/sql"
+       - "internal/controller/firebase/sql"
 
    
     schema: "schema.sql"

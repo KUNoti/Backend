@@ -289,6 +289,51 @@ func (e EventController) RegisEvents(ctx *gin.Context) {
 	ctx.JSON(200, regisEvents)
 }
 
+type notification struct {
+	Body  string `json:"body"`
+	Data  []byte `json:"data"`
+	Title string `json:"title"`
+	Token string `json:"token"`
+}
+
+func (e EventController) Notification(ctx *gin.Context) {
+	var notificationRequest notification
+	err := ctx.BindJSON(&notificationRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	err = e.fb.Notification(ctx, notificationRequest.Token, notificationRequest.Title, notificationRequest.Body, notificationRequest.Data)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(200, "Notification created")
+}
+
+type getNotification struct {
+	Token string `json:"token"`
+}
+
+func (e EventController) Notifications(ctx *gin.Context) {
+	var notificationsRequest getNotification
+	err := ctx.BindJSON(&notificationsRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	notis, err := e.fb.Notifications(ctx, notificationsRequest.Token)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(200, notis)
+}
+
 func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup := r.Group("/event")
 	eventGroup.POST("/create", e.CreateEvent)
@@ -305,6 +350,8 @@ func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup.DELETE("/unfollow_tag", e.UnFollowTag)
 	eventGroup.POST("/regis_event", e.RegisEvent)
 	eventGroup.GET("/regis_events", e.RegisEvents)
+	eventGroup.POST("/notification", e.Notification)
+	eventGroup.POST("/notifications", e.Notifications)
 }
 
 func NewEventController(db *pgxpool.Pool, firebaseService firebaseService.FireBaseService) *EventController {

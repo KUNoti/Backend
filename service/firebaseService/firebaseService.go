@@ -1,6 +1,7 @@
 package firebaseService
 
 import (
+	"KUNoti/internal/controller/firebase/repository"
 	"context"
 	firebase "firebase.google.com/go/v4"
 	"fmt"
@@ -12,10 +13,13 @@ import (
 type FireBaseService interface {
 	SendToToken(ctx context.Context, data []byte)
 	SendMulticastWithData(ctx context.Context, tokens []string, title, body string, data []byte) error
+	Notification(ctx context.Context, token string, title, body string, data []byte) error
+	Notifications(ctx context.Context, token string) ([]repository.Notification, error)
 }
 
 type FirebaseServiceClient struct {
-	app *firebase.App
+	app                *firebase.App
+	firebaseRepository *repository.FirebaseRepository
 }
 
 func NewFirebaseServiceClient(app *firebase.App) *FirebaseServiceClient {
@@ -24,7 +28,6 @@ func NewFirebaseServiceClient(app *firebase.App) *FirebaseServiceClient {
 
 func (f *FirebaseServiceClient) SendToToken(ctx context.Context, data []byte) {
 
-	ctx = context.Background()
 	client, err := f.app.Messaging(ctx)
 	if err != nil {
 		log.Fatalf("error getting Messaging client: %v\n", err)
@@ -73,6 +76,28 @@ func validateTokens(tokens []string) ([]string, error) {
 	return validTokens, nil
 }
 
+func (f *FirebaseServiceClient) Notification(ctx context.Context, token string, title, body string, data []byte) error {
+	err := f.firebaseRepository.Create(ctx, repository.CreateNoti{
+		Title: title,
+		Body:  body,
+		Data:  data,
+		Token: token,
+	})
+	if err != nil {
+		log.Println("Create notification to db fail")
+		return err
+	}
+	return nil
+}
+
+func (f *FirebaseServiceClient) Notifications(ctx context.Context, token string) ([]repository.Notification, error) {
+	notis, err := f.firebaseRepository.FindByToken(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+	return notis, nil
+}
+
 func (f *FirebaseServiceClient) SendMulticastWithData(ctx context.Context, tokens []string, title, body string, data []byte) error {
 	client, err := f.app.Messaging(ctx)
 	if err != nil {
@@ -109,6 +134,19 @@ func (f *FirebaseServiceClient) SendMulticastWithData(ctx context.Context, token
 		for idx, resp := range response.Responses {
 			if !resp.Success {
 				log.Printf("Failed to deliver to token %s: %v", validTokens[idx], resp.Error)
+			}
+		}
+	} else {
+		for _, tk := range validTokens {
+			err = f.firebaseRepository.Create(ctx, repository.CreateNoti{
+				Title: title,
+				Body:  body,
+				Data:  data,
+				Token: tk,
+			})
+			if err != nil {
+				log.Println("Create notification to db fail")
+				return err
 			}
 		}
 	}

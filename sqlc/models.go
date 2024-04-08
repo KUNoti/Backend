@@ -44,6 +44,16 @@ type FollowingEvent struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
+type Notification struct {
+	ID        int32            `json:"id"`
+	Title     string           `json:"title"`
+	Body      string           `json:"body"`
+	Data      []byte           `json:"data"`
+	Token     string           `json:"token"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+}
+
 type RegisEvent struct {
 	ID        int32            `json:"id"`
 	EventID   int32            `json:"event_id"`
