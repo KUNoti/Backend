@@ -9,6 +9,7 @@ import (
 	"KUNoti/sqlc"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"log"
 )
 
 type EventService struct {
@@ -101,6 +102,24 @@ func (eventService EventService) UnfollowTag(ctx *gin.Context, request eventrequ
 		return "", err
 	}
 	return tag, nil
+}
+
+func (eventService EventService) FindTokensByTagName(ctx *gin.Context, tag string) ([]string, error) {
+	tokens, err := eventService.eventRepository.FindTokensByTagName(ctx, tag)
+	if err != nil {
+		log.Printf("Error finding tokens by tag: %v\n", err)
+		return nil, err // Return nil slice and the error
+	}
+	return tokens, nil // Return the fetched tokens and nil as error
+}
+
+func (eventService EventService) FindTagByToken(ctx *gin.Context, request eventrequest.FindTagByToken) ([]string, error) {
+	tag, err := eventService.eventRepository.FindTagByToken(ctx, request.Token)
+	if err != nil {
+		log.Printf("Error finding tokens by tag: %v\n", err)
+		return nil, err
+	}
+	return tag, err
 }
 
 func NewEventService(db *pgxpool.Pool) *EventService {

@@ -10,7 +10,8 @@ import (
 )
 
 type FireBaseService interface {
-	SendToToken(ctx context.Context)
+	SendToToken(ctx context.Context, data []byte)
+	SendMulticastWithData(ctx context.Context, tokens []string, title, body string, data []byte) error
 }
 
 type FirebaseServiceClient struct {
@@ -21,7 +22,7 @@ func NewFirebaseServiceClient(app *firebase.App) *FirebaseServiceClient {
 	return &FirebaseServiceClient{app: app}
 }
 
-func (f *FirebaseServiceClient) SendToToken(ctx context.Context) {
+func (f *FirebaseServiceClient) SendToToken(ctx context.Context, data []byte) {
 
 	ctx = context.Background()
 	client, err := f.app.Messaging(ctx)
@@ -40,8 +41,7 @@ func (f *FirebaseServiceClient) SendToToken(ctx context.Context) {
 			Body:  "testBody",
 		},
 		Data: map[string]string{
-			"score": "850",
-			"time":  "2:45",
+			"event": string(data),
 		},
 		Token: registrationToken,
 	}
@@ -57,62 +57,62 @@ func (f *FirebaseServiceClient) SendToToken(ctx context.Context) {
 	// [END send_to_token_golang]
 }
 
-func sendMulticastAndHandleErrors(client *messaging.Client) {
-	// [START send_multicast_error]
-	// Create a list containing up to 500 registration tokens.
-	// This registration tokens come from the client FCM SDKs.
-	registrationTokens := []string{
-		"YOUR_REGISTRATION_TOKEN_1",
-		// ...
-		"YOUR_REGISTRATION_TOKEN_n",
-	}
-	message := &messaging.MulticastMessage{
-		Data: map[string]string{
-			"score": "850",
-			"time":  "2:45",
-		},
-		Tokens: registrationTokens,
-	}
-
-	br, err := client.SendEachForMulticast(context.Background(), message)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	if br.FailureCount > 0 {
-		var failedTokens []string
-		for idx, resp := range br.Responses {
-			if !resp.Success {
-				// The order of responses corresponds to the order of the registration tokens.
-				failedTokens = append(failedTokens, registrationTokens[idx])
-			}
+func validateTokens(tokens []string) ([]string, error) {
+	var validTokens []string
+	for _, token := range tokens {
+		if token == "" {
+			log.Printf("Encountered empty FCM token, skipping")
+			continue
 		}
-
-		fmt.Printf("List of tokens that caused failures: %v\n", failedTokens)
+		// Add more sophisticated checks if necessary, e.g., regex matching if you know the expected format
+		validTokens = append(validTokens, token)
 	}
-	// [END send_multicast_error]
+	if len(validTokens) == 0 {
+		return nil, fmt.Errorf("no valid tokens provided")
+	}
+	return validTokens, nil
 }
 
-//func sendToTopic(ctx context.Context, client *messaging.Client) {
-//	// [START send_to_topic_golang]
-//	// The topic name can be optionally prefixed with "/topics/".
-//	topic := "highScores"
-//
-//	// See documentation on defining a message payload.
-//	message := &messaging.Message{
-//		Data: map[string]string{
-//			"score": "850",
-//			"time":  "2:45",
-//		},
-//		Topic: topic,
-//	}
-//
-//	// Send a message to the devices subscribed to the provided topic.
-//	response, err := client.Send(ctx, message)
-//	if err != nil {
-//		log.Fatalln(err)
-//	}
-//	// Response is a message ID string.
-//	fmt.Println("Successfully sent message:", response)
-//	// [END send_to_topic_golang]
-//}
+func (f *FirebaseServiceClient) SendMulticastWithData(ctx context.Context, tokens []string, title, body string, data []byte) error {
+	client, err := f.app.Messaging(ctx)
+	if err != nil {
+		log.Printf("Error getting Messaging client: %v", err)
+		return err
+	}
+
+	validTokens, err := validateTokens(tokens)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	log.Println("Valid tokens:", validTokens)
+
+	message := &messaging.MulticastMessage{
+		Notification: &messaging.Notification{
+			Title: title,
+			Body:  body,
+		},
+		Data: map[string]string{
+			"event": string(data),
+		},
+		Tokens: validTokens,
+	}
+
+	response, err := client.SendEachForMulticast(ctx, message)
+	if err != nil {
+		log.Printf("Failed to send multicast message: %v", err)
+		return err
+	}
+
+	if response.FailureCount > 0 {
+		for idx, resp := range response.Responses {
+			if !resp.Success {
+				log.Printf("Failed to deliver to token %s: %v", validTokens[idx], resp.Error)
+			}
+		}
+	}
+
+	log.Printf("Successfully sent message to %d devices", response.SuccessCount)
+	return nil
+}

@@ -150,6 +150,14 @@ func (er EventRepository) FindTokensByTagName(ctx *gin.Context, tag string) ([]s
 	return tokens, nil
 }
 
+func (er EventRepository) FindTagByToken(ctx *gin.Context, token string) ([]string, error) {
+	tag, err := er.queries.FindTagNameByTokens(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+	return tag, nil
+}
+
 func NewEventRepository(db *pgxpool.Pool, queries *sqlc.Queries) *EventRepository {
 	return &EventRepository{
 		DB:      db,

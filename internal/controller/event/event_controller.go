@@ -5,6 +5,7 @@ import (
 	eventservice "KUNoti/service/event"
 	"KUNoti/service/firebaseService"
 	"KUNoti/service/s3service"
+	"encoding/json"
 	"github.com/spf13/viper"
 	"log"
 	"net/http"
@@ -44,12 +45,29 @@ func (e EventController) CreateEvent(ctx *gin.Context) {
 		log.Println(err)
 	}
 
-	//
-	// Tag?
+	eventData, err := json.Marshal(event)
+	if err != nil {
+		log.Printf("Error serializing event data: %v", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error processing event data"})
+		return
+	}
 
-	// function check tag return token
+	newCtx := ctx.Copy()
+	go func() {
+		tokens, err := e.es.FindTokensByTagName(newCtx, createEventRequest.Tag)
+		if err != nil {
+			log.Printf("Error finding tokens: %v", err)
+			return
+		}
+		if len(tokens) > 0 {
+			err := e.fb.SendMulticastWithData(newCtx, tokens, "New Event: "+event.Title, "Check out this new event happening soon!", eventData)
+			if err != nil {
+				log.Printf("Error sending notifications: %v", err)
+			}
+		}
+	}()
 
-	ctx.JSON(201, event)
+	ctx.JSON(201, createEventRequest)
 }
 
 func (e EventController) UpdateEvent(ctx *gin.Context) {
@@ -168,10 +186,14 @@ func (e EventController) FollowEvents(ctx *gin.Context) {
 	ctx.JSON(200, events)
 }
 
-
 func (e EventController) FindEventCreatedByMe(ctx *gin.Context) {
 	var findEventCreatedByMeRequest eventrequest.FindEventCreatedByMeRequest
 	err := ctx.BindJSON(&findEventCreatedByMeRequest)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
 	events, err := e.es.FindEventCreatedByMe(ctx, findEventCreatedByMeRequest)
 	if err != nil {
 		log.Println(err)
@@ -179,6 +201,23 @@ func (e EventController) FindEventCreatedByMe(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, events)
+}
+
+func (e EventController) FindTagByToken(ctx *gin.Context) {
+	var request eventrequest.FindTagByToken
+	err := ctx.BindJSON(&request)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	tag, err := e.es.FindTagByToken(ctx, request)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+	ctx.JSON(200, tag)
 }
 
 func (e EventController) FollowTag(ctx *gin.Context) {
@@ -195,8 +234,7 @@ func (e EventController) FollowTag(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
-	str := "Tag: " + followT.Tag
-	ctx.JSON(200, str)
+	ctx.JSON(200, "follow "+followT.Tag)
 }
 
 func (e EventController) UnFollowTag(ctx *gin.Context) {
@@ -214,7 +252,7 @@ func (e EventController) UnFollowTag(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
-	ctx.JSON(200, "unfollow tag: "+tag)
+	ctx.JSON(200, "unfollow "+tag)
 }
 
 func (e EventController) InitEndpoints(r *gin.RouterGroup) {
@@ -228,6 +266,7 @@ func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup.DELETE("/unfollow", e.UnFollowEvent)
 	eventGroup.GET("/follow_events", e.FollowEvents)
 	eventGroup.GET("/created_by_me", e.FindEventCreatedByMe)
+	eventGroup.GET("/tag", e.FindTagByToken)
 	eventGroup.POST("/follow_tag", e.FollowTag)
 	eventGroup.DELETE("/unfollow_tag", e.UnFollowTag)
 }

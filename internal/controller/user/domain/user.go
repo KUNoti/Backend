@@ -10,6 +10,7 @@ type User struct {
 	Email        string `json:"email"`
 	SocialID     string
 	ProfileImage string `json:"profile_image"`
+	Token        string `json:"token"`
 }
 
 func NewFromSqlc(u sqlc.User) User {
@@ -19,6 +20,7 @@ func NewFromSqlc(u sqlc.User) User {
 		Username: u.Username,
 		Password: u.Password,
 		Email:    u.Email,
+		Token:    u.Token,
 	}
 	if u.SocialID.Valid {
 		user.SocialID = u.SocialID.String
