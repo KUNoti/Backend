@@ -2,9 +2,11 @@ package firebaseService
 
 import (
 	"KUNoti/internal/controller/firebase/repository"
+	"KUNoti/sqlc"
 	"context"
 	firebase "firebase.google.com/go/v4"
 	"fmt"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
 
 	"firebase.google.com/go/v4/messaging"
@@ -22,8 +24,12 @@ type FirebaseServiceClient struct {
 	firebaseRepository *repository.FirebaseRepository
 }
 
-func NewFirebaseServiceClient(app *firebase.App) *FirebaseServiceClient {
-	return &FirebaseServiceClient{app: app}
+func NewFirebaseServiceClient(app *firebase.App, db *pgxpool.Pool) *FirebaseServiceClient {
+	queries := sqlc.New(db)
+	return &FirebaseServiceClient{
+		app:                app,
+		firebaseRepository: repository.NewFirebaseRepository(db, queries),
+	}
 }
 
 func (f *FirebaseServiceClient) SendToToken(ctx context.Context, data []byte) {

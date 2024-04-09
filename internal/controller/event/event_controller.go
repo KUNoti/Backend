@@ -291,7 +291,7 @@ func (e EventController) RegisEvents(ctx *gin.Context) {
 
 type notification struct {
 	Body  string `json:"body"`
-	Data  []byte `json:"data"`
+	Data  json.RawMessage `json:"data"`
 	Title string `json:"title"`
 	Token string `json:"token"`
 }

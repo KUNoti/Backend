@@ -78,7 +78,7 @@ func main() {
 }
 
 func initializeFirebaseApp() (*firebase.App, error) {
-	opt := option.WithCredentialsFile("/Users/premkul/Documents/Workspace/final-project/Backend/ServiceAccount.json")
+	opt := option.WithCredentialsFile("./Backend/ServiceAccount.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		return nil, fmt.Errorf("error initializing app: %v", err)

@@ -54,3 +54,10 @@ func (fb FirebaseRepository) FindByToken(ctx context.Context, token string) ([]N
 	}
 	return returnNotis, nil
 }
+
+func NewFirebaseRepository(db *pgxpool.Pool, queries *sqlc.Queries) *FirebaseRepository {
+	return &FirebaseRepository{
+		DB:      db,
+		queries: queries,
+	}
+}
