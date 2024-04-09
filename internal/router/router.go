@@ -23,7 +23,7 @@ func (a AppRouter) InitEndpoints(r *gin.RouterGroup) {
 
 func NewAppRouter(db *pgxpool.Pool, firebaseApp *firebase.App) *AppRouter {
 
-	firebaseService := fbService.NewFirebaseServiceClient(firebaseApp)
+	firebaseService := fbService.NewFirebaseServiceClient(firebaseApp, db)
 
 	return &AppRouter{
 		eventController: eventcontroller.NewEventController(db, firebaseService),
