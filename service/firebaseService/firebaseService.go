@@ -13,7 +13,7 @@ import (
 )
 
 type FireBaseService interface {
-	SendToToken(ctx context.Context, data []byte)
+	SendToToken(ctx context.Context)
 	SendMulticastWithData(ctx context.Context, tokens []string, title, body string, data []byte) error
 	Notification(ctx context.Context, token string, title, body string, data []byte) error
 	Notifications(ctx context.Context, token string) ([]repository.Notification, error)
@@ -32,7 +32,7 @@ func NewFirebaseServiceClient(app *firebase.App, db *pgxpool.Pool) *FirebaseServ
 	}
 }
 
-func (f *FirebaseServiceClient) SendToToken(ctx context.Context, data []byte) {
+func (f *FirebaseServiceClient) SendToToken(ctx context.Context) {
 
 	client, err := f.app.Messaging(ctx)
 	if err != nil {
@@ -42,15 +42,17 @@ func (f *FirebaseServiceClient) SendToToken(ctx context.Context, data []byte) {
 	// This registration token comes from the client FCM SDKs.
 	registrationToken := ""
 
+	eventData := `{"id":12,"title":"Tech Seminar","latitude":13.846300381568938,"longitude":100.56847292643977,"start_date":"2024-04-11T10:00:00Z","end_date":"2024-04-11T18:00:00Z","created_at":"2024-04-08T03:39:22.53Z","updated_at":"2024-04-08T03:39:22.53Z","price":0,"rating":0,"image":"https://keventimage.s3.amazonaws.com/event/9552ef2a-f559-11ee-aaff-acde48001122-jpeg","creator":16,"detail":"Web3, Blockchain","location_name":"E17 building","need_regis":false,"tag":"KU","regis_amount":0,"regis_max":0}`
+
 	// See documentation on defining a message payload.
 	message := &messaging.Message{
 
 		Notification: &messaging.Notification{
-			Title: "test",
-			Body:  "testBody",
+			Title: "New Event: Tech Seminar",
+			Body:  "Check out this new event happening soon!",
 		},
 		Data: map[string]string{
-			"event": string(data),
+			"event": eventData,
 		},
 		Token: registrationToken,
 	}
