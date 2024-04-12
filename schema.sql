@@ -8,6 +8,8 @@ CREATE TABLE "public"."events" ("id" serial NOT NULL, "start_date" timestamp(3) 
 CREATE TABLE "public"."follow_by_tag" ("id" serial NOT NULL, "tag" character varying(255) NOT NULL, "user_token" character varying(255) NOT NULL, "created_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updated_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY ("id"));
 -- Create "following_events" table
 CREATE TABLE "public"."following_events" ("id" serial NOT NULL, "event_id" integer NOT NULL, "user_id" integer NOT NULL, "created_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updated_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY ("id"));
+-- Create "notifications" table
+CREATE TABLE "public"."notifications" ("id" serial NOT NULL, "title" character varying(255) NOT NULL, "body" character varying(255) NOT NULL, "data" json NOT NULL, "token" character varying(255) NOT NULL, "created_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updated_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY ("id"));
 -- Create "regis_events" table
 CREATE TABLE "public"."regis_events" ("id" serial NOT NULL, "event_id" integer NOT NULL, "user_id" integer NOT NULL, "created_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updated_at" timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY ("id"));
 -- Create "users" table

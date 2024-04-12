@@ -6,9 +6,10 @@ import (
 	followevent "KUNoti/internal/controller/event/followevent/domain"
 	"KUNoti/internal/request/eventrequest"
 	"KUNoti/sqlc"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"strconv"
 )
 
 type EventRepository struct {
@@ -148,6 +149,14 @@ func (er EventRepository) FindTokensByTagName(ctx *gin.Context, tag string) ([]s
 		return nil, err
 	}
 	return tokens, nil
+}
+
+func (er EventRepository) FindTagByToken(ctx *gin.Context, token string) ([]string, error) {
+	tag, err := er.queries.FindTagNameByTokens(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+	return tag, nil
 }
 
 func (er EventRepository) RegisEvent(ctx *gin.Context, request eventrequest.RegisEventRequest) (string, error) {
