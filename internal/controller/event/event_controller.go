@@ -46,27 +46,25 @@ func (e EventController) CreateEvent(ctx *gin.Context) {
 		log.Println(err)
 	}
 
-	eventData, err := json.Marshal(event)
-	if err != nil {
-		log.Printf("Error serializing event data: %v", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error processing event data"})
-		return
-	}
-
 	newCtx := ctx.Copy()
 	go func() {
-		tokens, err := e.es.FindTokensByTagName(newCtx, createEventRequest.Tag)
-		if err != nil {
-			log.Printf("Error finding tokens: %v", err)
-			return
-		}
-		if len(tokens) > 0 {
-			err := e.fb.SendMulticastWithData(newCtx, tokens, "New Event: "+event.Title, "Check out this new event happening soon!", eventData)
-			if err != nil {
-				log.Printf("Error sending notifications: %v", err)
-			}
-		}
+		e.fb.SentToTopic(newCtx, event.Tag, event)
 	}()
+
+	//newCtx := ctx.Copy()
+	//go func() {
+	//tokens, err := e.es.FindTokensByTagName(newCtx, createEventRequest.Tag)
+	//if err != nil {
+	//	log.Printf("Error finding tokens: %v", err)
+	//	return
+	//}
+	//if len(tokens) > 0 {
+	//	err := e.fb.SendMulticastWithData(newCtx, tokens, "New Event: "+event.Title, "Check out this new event happening soon!", eventData)
+	//	if err != nil {
+	//		log.Printf("Error sending notifications: %v", err)
+	//	}
+	//}
+	//}()
 
 	ctx.JSON(201, createEventRequest)
 }
@@ -105,6 +103,9 @@ func (e EventController) DeleteEvent(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
+
+	// get eventid find register userid find user token
+	// e.fb.SentToTopic
 
 	ctx.JSON(200, "delete event ID : "+id)
 }
@@ -272,8 +273,13 @@ func (e EventController) RegisEvent(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
+
+	// get eventid find creator get creator token
+	// e.fb.SentToTopic
 	ctx.JSON(200, regisE)
 }
+
+// cancel
 
 func (e EventController) RegisEvents(ctx *gin.Context) {
 	var regisEventRequest eventrequest.RegisEventRequest

@@ -1,9 +1,11 @@
 package firebaseService
 
 import (
+	event "KUNoti/internal/controller/event/domain"
 	"KUNoti/internal/controller/firebase/repository"
 	"KUNoti/sqlc"
 	"context"
+	"encoding/json"
 	firebase "firebase.google.com/go/v4"
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -17,6 +19,7 @@ type FireBaseService interface {
 	SendMulticastWithData(ctx context.Context, tokens []string, title, body string, data []byte) error
 	Notification(ctx context.Context, token string, title, body string, data []byte) error
 	Notifications(ctx context.Context, token string) ([]repository.Notification, error)
+	SentToTopic(ctx context.Context, topic string, event *event.Event)
 }
 
 type FirebaseServiceClient struct {
@@ -66,6 +69,35 @@ func (f *FirebaseServiceClient) SendToToken(ctx context.Context) {
 	// Response is a message ID string.
 	fmt.Println("Successfully sent message:", response)
 	// [END send_to_token_golang]
+}
+
+func (f *FirebaseServiceClient) SentToTopic(ctx context.Context, topic string, event *event.Event) {
+	// The topic name can be optionally prefixed with "/topics/".
+	client, err := f.app.Messaging(ctx)
+	eventData, err := json.Marshal(event)
+	if err != nil {
+		log.Fatalln("Error marshaling event:", err)
+	}
+	// See documentation on defining a message payload.
+	message := &messaging.Message{
+		Notification: &messaging.Notification{
+			Title: "New Event: " + event.Title,
+			Body:  "Check out this new event happening soon!",
+		},
+		Data: map[string]string{
+			"payload": string(eventData),
+		},
+		Topic: topic,
+	}
+
+	// Send a message to the devices subscribed to the provided topic.
+	response, err := client.Send(ctx, message)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	// Response is a message ID string.
+	fmt.Println("Successfully sent message:", response)
+
 }
 
 func validateTokens(tokens []string) ([]string, error) {
