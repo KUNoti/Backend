@@ -363,7 +363,7 @@ func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup.DELETE("/unfollow_tag", e.UnFollowTag)
 	eventGroup.POST("/regis_event", e.RegisEvent)
 	eventGroup.GET("/regis_events", e.RegisEvents)
-	eventGroup.POST("/notifications", e.Notifications)
+	eventGroup.GET("/notifications", e.Notifications)
 }
 
 func NewEventController(db *pgxpool.Pool, firebaseService firebaseService.FireBaseService) *EventController {
