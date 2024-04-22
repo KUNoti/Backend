@@ -108,6 +108,25 @@ func (e EventController) DeleteEvent(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
+	go func() {
+		eventSelected, tokens, err := e.es.FindUserThatRegis(ctx, int(deleteEventRequest.ID))
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		eventJson, err := json.Marshal(eventSelected)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		if len(tokens) > 0 {
+			err = e.fb.SendMulticastWithData(ctx, tokens, "Event Cancel: "+"Event "+eventSelected.Title+" cancel!", "Event have been cancel!", eventJson)
+			if err != nil {
+				log.Printf("Error sending notifications: %v", err)
+			}
+		}
+	}()
 
 	ctx.JSON(200, "delete event ID : "+id)
 }

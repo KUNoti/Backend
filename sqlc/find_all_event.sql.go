@@ -13,6 +13,7 @@ const findAllEvent = `-- name: FindAllEvent :many
 SELECT id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator, regis_amount, regis_max, need_noti
 FROM events
 WHERE regis_max > regis_amount
+  AND start_date > CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok'
 ORDER BY id DESC
 `
 
