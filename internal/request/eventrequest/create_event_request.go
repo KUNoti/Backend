@@ -9,21 +9,21 @@ import (
 )
 
 type CreateEventRequest struct {
-	Title        string                `form:"title"`
-	Lat          float64               `form:"latitude"`
-	Lon          float64               `form:"longitude"`
-	StartDate    time.Time             `form:"start_date_time"`
-	EndDate      time.Time             `form:"end_date_time"`
-	Price        float64               `form:"price"`
-	Image        string                `form:"image"`
-	Creator      int                   `form:"creator"`
-	Detail       string                `form:"detail"`
-	LocationName string                `form:"location_name"`
-	NeedRegis    bool                  `form:"need_regis"`
+	Title        string                `form:"title" json:"title"`
+	Lat          float64               `form:"latitude" json:"latitude"`
+	Lon          float64               `form:"longitude" json:"longitude"`
+	StartDate    time.Time             `form:"start_date_time" json:"start_date_time"`
+	EndDate      time.Time             `form:"end_date_time" json:"end_date_time"`
+	Price        float64               `form:"price" json:"price"`
+	Image        string                `form:"image" json:"image"`
+	Creator      int                   `form:"creator" json:"creator"`
+	Detail       string                `form:"detail" json:"detail"`
+	LocationName string                `form:"location_name" json:"location_name"`
+	NeedRegis    bool                  `form:"need_regis" json:"need_regis"`
 	ImageFile    *multipart.FileHeader `form:"image_file"`
-	Tag          string                `form:"tag"`
-	RegisAmount  int                   `form:"regis_amount"`
-	RegisMax     int                   `form:"regis_max"`
+	Tag          string                `form:"tag" json:"tag"`
+	RegisAmount  int                   `form:"regis_amount" json:"regis_amount"`
+	RegisMax     int                   `form:"regis_max" json:"regis_max"`
 }
 
 func CreateParamsFromCreateRequest(cmd CreateEventRequest) sqlc.CreateEventParams {

@@ -19,7 +19,7 @@ INSERT INTO "events"
  created_at, updated_at
  )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-RETURNING id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator, regis_amount, regis_max
+RETURNING id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator, regis_amount, regis_max, need_noti
 `
 
 type CreateEventParams struct {
@@ -75,6 +75,7 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event
 		&i.Creator,
 		&i.RegisAmount,
 		&i.RegisMax,
+		&i.NeedNoti,
 	)
 	return i, err
 }

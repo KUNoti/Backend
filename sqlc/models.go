@@ -26,6 +26,7 @@ type Event struct {
 	Creator      int32            `json:"creator"`
 	RegisAmount  pgtype.Int4      `json:"regis_amount"`
 	RegisMax     pgtype.Int4      `json:"regis_max"`
+	NeedNoti     pgtype.Bool      `json:"need_noti"`
 }
 
 type FollowByTag struct {

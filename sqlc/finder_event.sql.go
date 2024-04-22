@@ -10,7 +10,7 @@ import (
 )
 
 const finderEvent = `-- name: FinderEvent :many
-SELECT id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator, regis_amount, regis_max
+SELECT id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator, regis_amount, regis_max, need_noti
 FROM events
 WHERE
     (title LIKE CONCAT('%', $1::text, '%'))
@@ -47,6 +47,7 @@ func (q *Queries) FinderEvent(ctx context.Context, keyword string) ([]Event, err
 			&i.Creator,
 			&i.RegisAmount,
 			&i.RegisMax,
+			&i.NeedNoti,
 		); err != nil {
 			return nil, err
 		}
