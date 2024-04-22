@@ -1,6 +1,7 @@
 package event
 
 import (
+	event "KUNoti/internal/controller/event/domain"
 	"KUNoti/internal/request/eventrequest"
 	eventservice "KUNoti/service/event"
 	"KUNoti/service/firebaseService"
@@ -133,6 +134,8 @@ func (e EventController) Events(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
+
+	e.fb.SendToToken(ctx)
 
 	ctx.JSON(200, events)
 }
@@ -305,6 +308,13 @@ type getNotification struct {
 	Token string `json:"token"`
 }
 
+type responseNotification struct {
+	Title string      `json:"title"`
+	Body  string      `json:"body"`
+	Data  event.Event `json:"data"`
+	Token string      `json:"token"`
+}
+
 func (e EventController) Notifications(ctx *gin.Context) {
 	var notificationsRequest getNotification
 	err := ctx.BindJSON(&notificationsRequest)
@@ -313,13 +323,28 @@ func (e EventController) Notifications(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
+
+	var resp []responseNotification
 	notis, err := e.fb.Notifications(ctx, notificationsRequest.Token)
+	for _, n := range notis {
+		var e event.Event
+		err := json.Unmarshal(n.Data, &e)
+		if err != nil {
+			return
+		}
+		resp = append(resp, responseNotification{
+			Title: n.Title,
+			Body:  n.Body,
+			Token: n.Token,
+			Data:  e,
+		})
+	}
 	if err != nil {
 		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
-	ctx.JSON(200, notis)
+	ctx.JSON(200, resp)
 }
 
 func (e EventController) InitEndpoints(r *gin.RouterGroup) {
