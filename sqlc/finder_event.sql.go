@@ -16,6 +16,7 @@ WHERE
     (title LIKE CONCAT('%', $1::text, '%'))
     OR (creator LIKE CONCAT('%', $1::text, '%'))
     OR (location_name LIKE CONCAT('%', $1::text, '%'))
+    AND start_date > CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok'
 
 ORDER BY id DESC
 `

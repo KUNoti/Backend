@@ -188,6 +188,25 @@ func (er EventRepository) FindRegisEventByUserID(ctx *gin.Context, userID int) (
 	return events, nil
 }
 
+func (er EventRepository) FindUserThatRegis(ctx *gin.Context, eventID int) (event.Event, []string, error) {
+	returnRes, err := er.queries.FindUserThatRegis(ctx, int32(eventID))
+	if err != nil {
+		return event.Event{}, nil, err
+	}
+	eventSqlc, err := er.queries.FindEventByID(ctx, returnRes[0].ID)
+	if err != nil {
+		return event.Event{}, nil, err
+	}
+	e := event.NewFromSqlc(eventSqlc)
+	tokens := make([]string, len(returnRes))
+	if len(returnRes) != 0 {
+		for i := range returnRes {
+			tokens[i] = returnRes[i].Token
+		}
+	}
+	return e, tokens, nil
+}
+
 func NewEventRepository(db *pgxpool.Pool, queries *sqlc.Queries) *EventRepository {
 	return &EventRepository{
 		DB:      db,

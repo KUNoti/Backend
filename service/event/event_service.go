@@ -139,6 +139,14 @@ func (eventService EventService) FindRegisEvent(ctx *gin.Context, request eventr
 	return events, nil
 }
 
+func (eventService EventService) FindUserThatRegis(ctx *gin.Context, eventID int) (event.Event, []string, error) {
+	e, tokens, err := eventService.eventRepository.FindUserThatRegis(ctx, eventID)
+	if err != nil {
+		return event.Event{}, nil, err
+	}
+	return e, tokens, nil
+}
+
 func NewEventService(db *pgxpool.Pool) *EventService {
 	queries := sqlc.New(db)
 	return &EventService{
