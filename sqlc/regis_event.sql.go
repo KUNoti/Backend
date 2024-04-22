@@ -47,7 +47,7 @@ SET regis_amount = CASE
                      ELSE updated_at
     END
 WHERE id = $1
-      RETURNING id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator, regis_amount, regis_max
+      RETURNING id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator, regis_amount, regis_max, need_noti
 `
 
 func (q *Queries) RegisEventByID(ctx context.Context, id int32) (Event, error) {
@@ -71,6 +71,7 @@ func (q *Queries) RegisEventByID(ctx context.Context, id int32) (Event, error) {
 		&i.Creator,
 		&i.RegisAmount,
 		&i.RegisMax,
+		&i.NeedNoti,
 	)
 	return i, err
 }

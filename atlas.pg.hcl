@@ -60,6 +60,11 @@ table "events" {
     null = true
     type = int
   }
+  column "need_noti" {
+    null = true
+    type = boolean
+    default = true
+  }
   column "created_at" {
     null    = false
     type    = timestamp(3)

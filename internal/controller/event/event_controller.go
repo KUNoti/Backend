@@ -6,6 +6,8 @@ import (
 	eventservice "KUNoti/service/event"
 	"KUNoti/service/firebaseService"
 	"KUNoti/service/s3service"
+	"KUNoti/sqlc"
+	"context"
 	"encoding/json"
 	"github.com/spf13/viper"
 	"log"
@@ -32,14 +34,15 @@ func (e EventController) CreateEvent(ctx *gin.Context) {
 		return
 	}
 
-	imageURL, err := e.s3.Upload(s3service.EventImageFolder, createEventRequest.ImageFile)
-	if err != nil {
-		log.Println("Error saving image to S3:", err)
-		ctx.JSON(http.StatusInternalServerError, "Error saving image")
-		return
+	if createEventRequest.ImageFile != nil {
+		imageURL, err := e.s3.Upload(s3service.EventImageFolder, createEventRequest.ImageFile)
+		if err != nil {
+			log.Println("Error saving image to S3:", err)
+			ctx.JSON(http.StatusInternalServerError, "Error saving image")
+			return
+		}
+		createEventRequest.Image = imageURL
 	}
-
-	createEventRequest.Image = imageURL
 
 	event, err := e.es.Create(ctx, createEventRequest)
 	if err != nil {
@@ -292,28 +295,13 @@ func (e EventController) RegisEvents(ctx *gin.Context) {
 	ctx.JSON(200, regisEvents)
 }
 
-type notification struct {
-	Body  string          `json:"body"`
-	Data  json.RawMessage `json:"data"`
-	Title string          `json:"title"`
-	Token string          `json:"token"`
-}
-
-func (e EventController) Notification(ctx *gin.Context) {
-	var notificationRequest notification
-	err := ctx.BindJSON(&notificationRequest)
-	if err != nil {
-		log.Println(err)
-		ctx.JSON(http.StatusBadRequest, err)
-		return
-	}
-	err = e.fb.Notification(ctx, notificationRequest.Token, notificationRequest.Title, notificationRequest.Body, notificationRequest.Data)
-	if err != nil {
-		log.Println(err)
-		ctx.JSON(http.StatusBadRequest, err)
-		return
-	}
-	ctx.JSON(200, "Notification created")
+func (e EventController) Notification(ctx context.Context, tokens []string, event sqlc.Event, eventData []byte) {
+	go func() {
+		err := e.fb.SendMulticastWithData(ctx, tokens, "New Event: "+event.Title, "Check out this new event happening soon!", eventData)
+		if err != nil {
+			log.Printf("Error sending notifications: %v", err)
+		}
+	}()
 }
 
 type getNotification struct {
@@ -375,8 +363,7 @@ func (e EventController) InitEndpoints(r *gin.RouterGroup) {
 	eventGroup.DELETE("/unfollow_tag", e.UnFollowTag)
 	eventGroup.POST("/regis_event", e.RegisEvent)
 	eventGroup.GET("/regis_events", e.RegisEvents)
-	eventGroup.POST("/notification", e.Notification)
-	eventGroup.GET("/notifications", e.Notifications)
+	eventGroup.POST("/notifications", e.Notifications)
 }
 
 func NewEventController(db *pgxpool.Pool, firebaseService firebaseService.FireBaseService) *EventController {
@@ -389,14 +376,14 @@ func NewEventController(db *pgxpool.Pool, firebaseService firebaseService.FireBa
 		AwsSecretAccessKey: viper.GetString("AWS_SECRET_ACCESS_KEY"),
 	}
 
-	s3service, err := s3service.NewS3Service(&config)
+	newS3service, err := s3service.NewS3Service(&config)
 	if err != nil {
 		log.Fatal("Failed to initialize S3 service:", err)
 	}
 
 	return &EventController{
 		es: eventservice.NewEventService(db),
-		s3: s3service,
+		s3: newS3service,
 		fb: firebaseService,
 	}
 }

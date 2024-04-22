@@ -11,13 +11,13 @@ import (
 )
 
 type AppRouter struct {
-	eventController *eventcontroller.EventController
+	EventController *eventcontroller.EventController
 	userController  *usercontroller.UserController
 }
 
 func (a AppRouter) InitEndpoints(r *gin.RouterGroup) {
 	appGroup := r.Group("/api")
-	a.eventController.InitEndpoints(appGroup)
+	a.EventController.InitEndpoints(appGroup)
 	a.userController.InitEndpoints(appGroup)
 }
 
@@ -26,7 +26,7 @@ func NewAppRouter(db *pgxpool.Pool, firebaseApp *firebase.App) *AppRouter {
 	firebaseService := fbService.NewFirebaseServiceClient(firebaseApp, db)
 
 	return &AppRouter{
-		eventController: eventcontroller.NewEventController(db, firebaseService),
+		EventController: eventcontroller.NewEventController(db, firebaseService),
 		userController:  usercontroller.NewUserController(db),
 	}
 }

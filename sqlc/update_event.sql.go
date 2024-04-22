@@ -30,7 +30,7 @@ updated_at = CURRENT_TIMESTAMP
 
 
 WHERE id = $14
-RETURNING id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator, regis_amount, regis_max
+RETURNING id, start_date, end_date, created_at, updated_at, title, latitude, longitude, price, image, detail, location_name, need_regis, tag, creator, regis_amount, regis_max, need_noti
 `
 
 type UpdateEventByIDParams struct {
@@ -86,6 +86,7 @@ func (q *Queries) UpdateEventByID(ctx context.Context, arg UpdateEventByIDParams
 		&i.Creator,
 		&i.RegisAmount,
 		&i.RegisMax,
+		&i.NeedNoti,
 	)
 	return i, err
 }
